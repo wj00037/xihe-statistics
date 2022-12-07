@@ -1,0 +1,7 @@
+service:
+  name: "xihe-statistics"
+  httpPort: 8080
+  duration: 180
+mongo:
+  db_name: "xihe"
+  db_conn: "mongodb://xiheAdmin:Password@1@127.0.0.1:27017/?timeoutMS=5000"
