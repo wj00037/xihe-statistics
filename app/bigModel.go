@@ -2,6 +2,7 @@ package app
 
 import (
 	"errors"
+	"fmt"
 	"project/xihe-statistics/domain"
 	"project/xihe-statistics/domain/repository"
 	"time"
@@ -30,8 +31,9 @@ type UserWithBigModelAddCmd struct {
 }
 
 type BigModelRecordService interface {
-	AddUserWithBigModel(cmd *UserWithBigModelAddCmd) error
+	AddUserWithBigModel(*UserWithBigModelAddCmd) error
 	GetBigModelRecordsByType(domain.BigModel) (BigModelDTO, error)
+	GetBigModelRecordAll() (BigModelAllDTO, error)
 }
 
 func NewBigModelRecordService(
@@ -79,6 +81,49 @@ func (b bigModelRecordService) GetBigModelRecordsByType(d domain.BigModel) (dto 
 	return
 }
 
+func (b bigModelRecordService) GetBigModelRecordAll() (dto BigModelAllDTO, err error) {
+	var (
+		bigmodel domain.BigModel
+		// bm       []domain.UserWithBigModel
+		duplicate_counts = 0
+		usersAll         []string
+	)
+
+	for _, bigmodelType := range domain.GetBigModelTypeList() {
+
+		bigmodel, err = domain.NewBigModel(bigmodelType)
+		if err != nil {
+			return
+		}
+
+		bm, err := b.ub.Get(bigmodel)
+		if err != nil {
+			return dto, err
+		}
+
+		// deduplicate single bigmodel type user list
+		users := make([]string, len(bm))
+		for j := range bm {
+			users[j] = bm[j].UserName
+		}
+		users = RemoveRepeatedElement(users) // TODO: maybe there is way to optimize
+		fmt.Printf("users: %v\n", users)
+
+		duplicate_counts += len(users)
+		usersAll = append(usersAll, users...)
+	}
+
+	usersAll = RemoveRepeatedElement(usersAll)
+
+	dto = BigModelAllDTO{
+		Users:           usersAll,
+		DupliacteCounts: duplicate_counts,
+		Counts:          len(usersAll),
+	}
+
+	return
+}
+
 func (cmd *UserWithBigModelAddCmd) toBigModel(r *domain.UserWithBigModel) {
 	now := time.Now().Unix()
 
@@ -113,5 +158,8 @@ type BigModelDTO struct {
 	UpdateAt string   `json:"update_at"`
 }
 
-type BigModelListDTO struct {
+type BigModelAllDTO struct {
+	Users           []string `json:"user_list"`
+	DupliacteCounts int      `json:"duplicate_counts"`
+	Counts          int      `json:"counts"`
 }

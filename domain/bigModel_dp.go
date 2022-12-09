@@ -4,9 +4,11 @@ import (
 	"errors"
 )
 
-var bigModelTypeList = []string{"taichu-VQA", "taichu-TextToImg",
-	"taichu-ImgToText", "luojiaNet", "pangu-QA",
-	"codegeex"}
+func GetBigModelTypeList() []string {
+	return []string{"taichu-VQA", "taichu-TextToImg",
+		"taichu-ImgToText", "luojiaNet", "pangu-QA",
+		"codegeex"}
+}
 
 // BigModel
 type BigModel interface {
@@ -18,6 +20,7 @@ func NewBigModel(t string) (BigModel, error) {
 		return nil, errors.New("bigmodel can not be null")
 	}
 
+	bigModelTypeList := GetBigModelTypeList()
 	for j, bt := range bigModelTypeList {
 		if t == bt {
 			break
