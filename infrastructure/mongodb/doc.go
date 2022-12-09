@@ -1,13 +1,13 @@
 package mongodb
 
-type UserItem struct {
+type UserWithRepoItem struct {
 	UserName string `bson:"username" json:"username"`
-	UpdateAt int64  `bson:"update_at" json:"update_at"`
+	RepoName string `bson:"repo_name" json:"repo_name"`
+	CreateAt int64  `bson:"create_at" json:"create_at"`
 }
 
-type UserWithRepoItem struct {
-	Type     string     `bson:"type" json:"type"`
-	Users    []UserItem `bson:"users" json:"users"`
-	Counts   int        `bson:"counts" json:"counts"`
-	UpdateAt int64      `bson:"update_at" json:"update_at"`
+type BigModelRecordItem struct {
+	UserName string `bson:"username" json:"username"`
+	BigModel string `bson:"bigmodel" json:"bigmodel"`
+	CreateAt int64  `bson:"create_at" json:"create_at"`
 }

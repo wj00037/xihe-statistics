@@ -1,16 +1,22 @@
 package domain
 
-// BigModel Type
-type BigModelType interface {
-	BigModelType() string
+import "errors"
+
+// BigModel
+type BigModel interface {
+	BigModel() string
 }
 
-func NewBigModelType(t string) (BigModelType, error) {
-	return bigModelType(t), nil
+func NewBigModel(t string) (BigModel, error) {
+	if t == "" {
+		return nil, errors.New("bigmodel can not be null")
+	}
+
+	return bigModel(t), nil
 }
 
-type bigModelType string
+type bigModel string
 
-func (t bigModelType) BigModelType() string {
+func (t bigModel) BigModel() string {
 	return string(t)
 }

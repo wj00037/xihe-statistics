@@ -1,131 +1,128 @@
 package app
 
-import (
-	"errors"
+// import (
+// 	"errors"
 
-	"github.com/sirupsen/logrus"
+// 	"github.com/sirupsen/logrus"
 
-	"project/xihe-statistics/domain"
-	"project/xihe-statistics/domain/user"
-)
+// 	"project/xihe-statistics/domain"
+// 	"project/xihe-statistics/domain/user"
+// )
 
-func (cmd *UserWithRepoCmd) Validate() error {
-	err := errors.New("invalid cmd of add user create repo record")
+// func (cmd *UserWithRepoCmd) Validate() error {
+// 	err := errors.New("invalid cmd of add user create repo record")
 
-	b := cmd.UserName != ""
+// 	b := cmd.UserName != ""
 
-	if !b {
-		return err
-	}
+// 	if !b {
+// 		return err
+// 	}
 
-	return nil
+// 	return nil
 
-}
+// }
 
-func (cmd *UserWithBigModelAddCmd) Validate() error {
-	err := errors.New("invalid cmd of add user query big model record")
+// func (cmd *UserWithBigModelAddCmd) Validate() error {
+// 	err := errors.New("invalid cmd of add user query big model record")
 
-	b := cmd.UserName != "" &&
-		cmd.BigModelType != ""
+// 	b := cmd.UserName != "" &&
+// 		cmd.BigModel != ""
 
-	if !b {
-		return err
-	}
+// 	if !b {
+// 		return err
+// 	}
 
-	t := cmd.BigModelType == "taichu-VQA" ||
-		cmd.BigModelType == "taichu-TextToImg" ||
-		cmd.BigModelType == "taichu-ImgToText"
-	if !t {
-		return err
-	}
+// 	t := cmd.BigModel == "taichu-VQA" ||
+// 		cmd.BigModel == "taichu-TextToImg" ||
+// 		cmd.BigModel == "taichu-ImgToText"
+// 	if !t {
+// 		return err
+// 	}
 
-	return nil
-}
+// 	return nil
+// }
 
-type D1Service interface {
-	AddUserWithRepo(cmd *UserWithRepoCmd) error
-	AddUserWithBigModel(cmd *UserWithBigModelAddCmd) error
-	GetUserWithRepo() (UserWithRepoDTO, error)
-	GetUserWithBigModel() (UserWithBigModelDTO, error)
-	GetUsers() (UsersDTO, error)
-}
+// type D1Service interface {
+// 	AddUserWithRepo(cmd *UserWithRepoCmd) error
+// 	AddUserWithBigModel(cmd *UserWithBigModelAddCmd) error
+// 	GetUserWithRepoCounts() (UserWithRepoCountsDTO, error)
+// 	GetUserWithBigModelCounts() (UserWithBigModelCountsDTO, error)
+// 	GetUsers() (UsersDTO, error)
+// }
 
-type UserWithRepoCmd struct {
-	UserName string `json:"username"`
-}
+// type UserWithRepoCmd struct {
+// 	domain.UserWithRepo
+// }
 
-type UserWithBigModelAddCmd struct {
-	BigModelType string `json:"bigmodel_type"`
-	UserName     string `json:"username"`
-}
+// type UserWithBigModelAddCmd struct {
+// 	domain.UserWithBigModel
+// }
 
-type UserWithRepoDTO struct {
-	Counts   int   `json:"counts"`
-	UpdateAt int64 `json:"update_at"`
-}
+// type UserWithRepoCountsDTO struct {
+// 	Counts   int   `json:"counts"`
+// 	UpdateAt int64 `json:"update_at"`
+// }
 
-type UserWithBigModelDTO struct {
-	BigModelType string        `json:"bigmodel_type"`
-	Users        []domain.User `json:"users"`
-	Counts       int           `json:"counts"`
-}
+// type UserWithBigModelCountsDTO struct {
+// 	BigModelType string        `json:"bigmodel_type"`
+// 	Users        []domain.User `json:"users"`
+// 	Counts       int           `json:"counts"`
+// }
 
-type UserWithBigModelsDTO struct {
-	BigModels []UserWithBigModelDTO `bigmodels`
-	Counts    int                   `json:"counts"`
-}
+// type UsersDTO struct {
+// 	Users  []domain.User `json:"users"`
+// 	Counts int           `json:"counts"`
+// }
 
-type UsersDTO struct {
-	Users  []domain.User `json:"users"`
-	Counts int           `json:"counts"`
-}
+// // d1Service struct
+// type d1Service struct {
+// 	log *logrus.Entry
+// 	ur  user.UserWithRepo
+// 	um  user.UserWithBigModel
+// }
 
-// d1Service struct
-type d1Service struct {
-	log *logrus.Entry
-	ds  user.D1Service
-}
+// func NewD1Service(
+// 	log *logrus.Entry,
+// 	ur user.UserWithRepo,
+// 	um user.UserWithBigModel,
+// ) D1Service {
+// 	d := &d1Service{
+// 		log: log,
+// 		ur:  ur,
+// 		um:  um,
+// 	}
 
-func NewD1Service(
-	log *logrus.Entry,
-	ds user.D1Service,
-) D1Service {
-	d := &d1Service{
-		log: log,
-		ds:  ds,
-	}
+// 	return d
+// }
 
-	return d
-}
+// func (d d1Service) AddUserWithRepo(cmd *UserWithRepoCmd) error {
+// 	return d.ur.Add(&cmd.UserWithRepo)
+// }
 
-func (d d1Service) AddUserWithRepo(cmd *UserWithRepoCmd) error {
-	return d.ds.AddUserWithRepo()
-}
+// func (d d1Service) AddUserWithBigModel(cmd *UserWithBigModelAddCmd) error {
+// 	return d.um.Add(&cmd.UserWithBigModel)
+// }
 
-func (d d1Service) AddUserWithBigModel(cmd *UserWithBigModelAddCmd) error {
-	return nil
-}
+// func (d d1Service) GetUserWithRepoCounts() (UserWithRepoDTO, error) {
+// }
 
-func (d d1Service) GetUserWithRepo() (UserWithRepoDTO, error) {
-}
+// func (d d1Service) GetUserWithBigModelCounts() (UserWithBigModelDTO, error) {
+// }
 
-func (d d1Service) GetUserWithBigModel() (UserWithBigModelDTO, error) {
-}
+// func (d d1Service) GetUsers() (UsersDTO, error) {
+// }
 
-func (d d1Service) GetUsers() (UsersDTO, error) {
-}
+// func (d d1Service) toUserWithRepoCountsDTO(u *domain.UserWithRepo, dto *UserWithRepoDTO) {
+// 	*dto = UserWithRepoDTO{
+// 		Counts:   u.Counts,
+// 		UpdateAt: u.UpdateAt,
+// 	}
+// }
 
-func (d d1Service) toUserWithRepoDTO(u *domain.UserWithRepo, dto *UserWithRepoDTO) {
-	*dto = UserWithRepoDTO{
-		Counts:   u.Counts,
-		UpdateAt: u.UpdateAt,
-	}
-}
-
-func (d d1Service) toUserWithBigModelDTO(u *domain.UserWithBigModel, dto *UserWithBigModelDTO) {
-	*dto = UserWithBigModelDTO{
-		BigModelType: u.BigModelType,
-		Users:        u.Users,
-		Counts:       u.Counts,
-	}
-}
+// func (d d1Service) toUserWithBigModelCountsDTO(u *domain.UserWithBigModel, dto *UserWithBigModelDTO) {
+// 	*dto = UserWithBigModelDTO{
+// 		BigModelType: u.BigModelType,
+// 		Users:        u.Users,
+// 		Counts:       u.Counts,
+// 	}
+// }

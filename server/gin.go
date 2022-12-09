@@ -10,10 +10,12 @@ import (
 	"github.com/sirupsen/logrus"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"github.com/swaggo/swag"
 
+	"project/xihe-statistics/config"
 	"project/xihe-statistics/controller"
-	"project/xihe-statistics/app"
+	"project/xihe-statistics/docs"
+	"project/xihe-statistics/infrastructure/mongodb"
+	"project/xihe-statistics/infrastructure/repositories"
 )
 
 type Service struct {
@@ -21,38 +23,41 @@ type Service struct {
 
 	Port    int
 	Timeout time.Duration
-
-	Training app.TrainingService
 }
 
-func StartWebServer(spec *swag.Spec, service *Service) {
+func StartWebServer(port int, timeout time.Duration) {
 	r := gin.New()
 	r.Use(gin.Recovery())
 	r.Use(logRequest())
 
-	setRouter(r, spec, service)
+	setRouter(r)
 
 	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%d", service.Port),
+		Addr:    fmt.Sprintf(":%d", port),
 		Handler: r,
 	}
 
 	defer interrupts.WaitForGracefulShutdown()
 
-	interrupts.ListenAndServe(srv, service.Timeout)
+	interrupts.ListenAndServe(srv, timeout)
 }
 
 //setRouter init router
-func setRouter(engine *gin.Engine, spec *swag.Spec, service *Service) {
-	spec.BasePath = "/api"
-	spec.Title = "xihe-statistics"
-	spec.Description = "APIs of xihe statistics"
+func setRouter(engine *gin.Engine) {
+	docs.SwaggerInfo.BasePath = "/api"
+	docs.SwaggerInfo.Title = "xihe-statistics"
+	docs.SwaggerInfo.Description = ""
 
-	v1 := engine.Group(spec.BasePath)
+	collections := config.Conf.Mongodb.MongodbCollections
+
+	bigModelRecord := repositories.NewBigModelRecordRepository(
+		mongodb.NewBigModelMapper(collections.Statistics),
+	)
+
+	v1 := engine.Group(docs.SwaggerInfo.BasePath)
 	{
-		controller.AddRouterForTrainingController(
-			v1,
-			service.Training,
+		controller.AddRouterForBigModelRecordController(
+			v1, bigModelRecord,
 		)
 	}
 

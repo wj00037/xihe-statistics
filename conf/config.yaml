@@ -1,7 +1,13 @@
-service:
-  name: "xihe-statistics"
-  httpPort: 8080
-  duration: 180
-mongo:
+name: "xihe-statistics"
+http_port: 8080
+duration: 180
+
+mongodb:
   db_name: "xihe"
-  db_conn: "mongodb://xiheAdmin:Password@1@127.0.0.1:27017/?timeoutMS=5000"
+  db_conn: "mongodb://xiheAdmin:Password11@127.0.0.1:27017/xihe?timeoutMS=5000"
+  collections:
+    d0: "d0"
+    bigmodel: "bigmodelRecord"
+    repo: "repoRecord"
+    d1: "d1"
+    d2: "d2"

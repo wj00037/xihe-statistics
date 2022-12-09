@@ -22,7 +22,9 @@ const (
 	mongoCmdSetOnInsert = "$setOnInsert"
 )
 
-var errDocNotExists = errors.New("doc doesn't exist")
+var (
+	errDocNotExists = errors.New("doc doesn't exist")
+)
 
 func isDocNotExists(err error) bool {
 	return errors.Is(err, errDocNotExists)
@@ -39,16 +41,9 @@ func genDoc(doc interface{}) (m bson.M, err error) {
 	return
 }
 
-func typeFilter(statisticsType string) (bson.M, error) {
+func typeFilter(bigModelType string) (bson.M, error) {
 	return bson.M{
-		"type": statisticsType,
-	}, nil
-}
-
-func doubleTypeFilter(statisticsType string, bigmodelType string) (bson.M, error) {
-	return bson.M{
-		"type":          statisticsType,
-		"bigmodel_type": bigmodelType,
+		"bigmodel_type": bigModelType,
 	}, nil
 }
 
@@ -69,6 +64,21 @@ func (cli *client) updateDoc(
 
 	if r.MatchedCount == 0 {
 		return errDocNotExists
+	}
+
+	return nil
+}
+
+func (cli *client) createDoc(
+	ctx context.Context, collection string,
+	doc bson.M,
+) error {
+	_, err := cli.collection(collection).InsertOne(
+		ctx, doc,
+	)
+
+	if err != nil {
+		return err
 	}
 
 	return nil

@@ -10,18 +10,20 @@ import (
 var Conf = new(SrvConfig)
 
 type SrvConfig struct {
-	Name    string `mapstructure:"name"`
-	Mongodb `mapstructure:"mongodb"`
+	Name     string `mapstructure:"name"`
+	HttpPort int    `mapstructure:"http_port"`
+	Duration int    `mapstructure:"duration"`
+	*Mongodb `mapstructure:"mongodb"`
 }
 
 type Mongodb struct {
-	DBName      string             `json:"db_name"       required:"true"`
-	DBConn      string             `json:"db_conn"       required:"true"`
-	Collections MongodbCollections `json:"collections"   required:"true"`
+	DBName              string `mapstructure:"db_name"`
+	DBConn              string `mapstructure:"db_conn"`
+	*MongodbCollections `mapstructure:"collections"`
 }
 
 type MongodbCollections struct {
-	Statistics string `json:"statistics"             required:"true"`
+	Statistics string `mapstructure:"statistics"`
 }
 
 // Init 整个服务配置文件初始化的方法
