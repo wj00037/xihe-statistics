@@ -2,7 +2,6 @@ package app
 
 import (
 	"errors"
-	"fmt"
 	"project/xihe-statistics/domain"
 	"project/xihe-statistics/domain/repository"
 	"time"
@@ -51,8 +50,6 @@ func (b bigModelRecordService) AddUserWithBigModel(cmd *UserWithBigModelAddCmd) 
 	v := new(domain.UserWithBigModel)
 	cmd.toBigModel(v)
 
-	fmt.Printf("v: %v\n", v)
-
 	err := b.ub.Add(v)
 	if err != nil {
 		return err
@@ -70,12 +67,13 @@ func (b bigModelRecordService) GetBigModelRecordsByType(d domain.BigModel) (dto 
 	for j := range bm {
 		users[j] = bm[j].UserName
 	}
+	users = RemoveRepeatedElement(users)
 
 	dto = BigModelDTO{
 		BigModel: d.BigModel(),
 		Users:    users,
-		Counts:   len(bm),
-		UpdateAt: time.Now().Format("2006-01-02 15:04:05"),
+		Counts:   len(users),
+		UpdateAt: time.Now().Format("2006-01-02 15:04:05+08:00"),
 	}
 
 	return
@@ -89,6 +87,23 @@ func (cmd *UserWithBigModelAddCmd) toBigModel(r *domain.UserWithBigModel) {
 		BigModel: cmd.BigModel,
 		CreateAt: now,
 	}
+}
+
+func RemoveRepeatedElement(arr []string) (newArr []string) {
+	newArr = make([]string, 0)
+	for i := 0; i < len(arr); i++ {
+		repeat := false
+		for j := i + 1; j < len(arr); j++ {
+			if arr[i] == arr[j] {
+				repeat = true
+				break
+			}
+		}
+		if !repeat {
+			newArr = append(newArr, arr[i])
+		}
+	}
+	return
 }
 
 type BigModelDTO struct {
