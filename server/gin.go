@@ -51,7 +51,7 @@ func setRouter(engine *gin.Engine) {
 	collections := config.Conf.Mongodb.MongodbCollections
 
 	bigModelRecord := repositories.NewBigModelRecordRepository(
-		mongodb.NewBigModelMapper(collections.Statistics),
+		mongodb.NewBigModelMapper(collections.BigModel),
 	)
 
 	v1 := engine.Group(docs.SwaggerInfo.BasePath)

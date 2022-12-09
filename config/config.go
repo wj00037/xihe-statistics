@@ -23,7 +23,11 @@ type Mongodb struct {
 }
 
 type MongodbCollections struct {
-	Statistics string `mapstructure:"statistics"`
+	D0       string `mapstructure:"d0"`
+	BigModel string `mapstructure:"bigmodel"`
+	Repo     string `mapstructure:"repo"`
+	D1       string `mapstructure:"d1"`
+	D2       string `mapstructure:"d2"`
 }
 
 // Init 整个服务配置文件初始化的方法

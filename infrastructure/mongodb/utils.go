@@ -6,6 +6,7 @@ import (
 	"errors"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 const (
@@ -43,7 +44,7 @@ func genDoc(doc interface{}) (m bson.M, err error) {
 
 func typeFilter(bigModelType string) (bson.M, error) {
 	return bson.M{
-		"bigmodel_type": bigModelType,
+		"bigmodel": bigModelType,
 	}, nil
 }
 
@@ -82,4 +83,21 @@ func (cli *client) createDoc(
 	}
 
 	return nil
+}
+
+func (cli *client) find(
+	ctx context.Context, collection string,
+	filterOfDoc, result interface{},
+) error {
+	col := cli.collection(collection)
+
+	var cursor *mongo.Cursor
+	var err error
+
+	cursor, err = col.Find(ctx, filterOfDoc)
+	if err != nil {
+		return err
+	}
+
+	return cursor.All(ctx, result)
 }

@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"project/xihe-statistics/domain"
-	"project/xihe-statistics/domain/user"
+	"project/xihe-statistics/domain/repository"
 )
 
 // repo record
@@ -10,7 +10,7 @@ type UserWithRepoMapper interface {
 	Add(UserWithRepoDO) error
 }
 
-func NewUserWithRepoRepository(mapper UserWithRepoMapper) user.UserWithRepo {
+func NewUserWithRepoRepository(mapper UserWithRepoMapper) repository.UserWithRepo {
 	return userWithRepo{mapper}
 }
 

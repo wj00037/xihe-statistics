@@ -1,10 +1,8 @@
 package controller
 
 import (
-	"fmt"
 	"project/xihe-statistics/app"
 	"project/xihe-statistics/domain"
-	"time"
 )
 
 type QueryBigModelRequest struct {
@@ -20,11 +18,5 @@ func (req *QueryBigModelRequest) toCmd() (cmd app.UserWithBigModelAddCmd, err er
 
 	cmd.UserName = req.UserName
 
-	// add timestamp
-	cmd.CreateAt = time.Now().Unix() // TODO: delete time.now
-
-	fmt.Printf("cmd: %v\n", cmd)
-
 	return
-
 }

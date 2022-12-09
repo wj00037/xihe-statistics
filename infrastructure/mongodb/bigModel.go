@@ -37,6 +37,34 @@ func (col bigModel) Add(
 	return
 }
 
+func (col bigModel) Get(t string) (dos []repositories.BigModelDO, err error) {
+
+	var items []BigModelRecordItem
+
+	filter, err := typeFilter(t)
+	if err != nil {
+		return
+	}
+
+	f := func(ctx context.Context) error {
+		return cli.find(
+			ctx, col.collectionName,
+			filter, &items,
+		)
+	}
+
+	if err = withContext(f); err != nil {
+		return
+	}
+
+	dos = make([]repositories.BigModelDO, len(items))
+	for j := range items {
+		col.toBigModelDO(items[j], &dos[j])
+	}
+
+	return
+}
+
 func (col bigModel) toBigModelDoc(b repositories.BigModelDO) (bson.M, error) {
 	docObj := BigModelRecordItem{
 		UserName: b.UserName,
@@ -45,4 +73,12 @@ func (col bigModel) toBigModelDoc(b repositories.BigModelDO) (bson.M, error) {
 	}
 
 	return genDoc(docObj)
+}
+
+func (col bigModel) toBigModelDO(v BigModelRecordItem, do *repositories.BigModelDO) {
+	*do = repositories.BigModelDO{
+		UserName: v.UserName,
+		BigModel: v.BigModel,
+		CreateAt: v.CreateAt,
+	}
 }

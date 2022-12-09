@@ -2,14 +2,15 @@ package repositories
 
 import (
 	"project/xihe-statistics/domain"
-	"project/xihe-statistics/domain/user"
+	"project/xihe-statistics/domain/repository"
 )
 
 type BigModelMapper interface {
 	Add(BigModelDO) error
+	Get(string) ([]BigModelDO, error)
 }
 
-func NewBigModelRecordRepository(mapper BigModelMapper) user.UserWithBigModel {
+func NewBigModelRecordRepository(mapper BigModelMapper) repository.UserWithBigModel {
 	return bigmodel{mapper}
 }
 
@@ -23,12 +24,33 @@ type BigModelDO struct {
 	CreateAt int64
 }
 
+func (b *BigModelDO) toBigModel(d *domain.UserWithBigModel) (err error) {
+	d.UserName = b.UserName
+	d.BigModel, err = domain.NewBigModel(b.BigModel)
+	d.CreateAt = b.CreateAt
+	return
+}
+
 func (impl bigmodel) Add(d *domain.UserWithBigModel) error {
 	err := impl.mapper.Add(impl.toBigmodelRecordDO(d))
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func (impl bigmodel) Get(d domain.BigModel) (ds []domain.UserWithBigModel, err error) {
+	dos, err := impl.mapper.Get(d.BigModel())
+
+	ds = make([]domain.UserWithBigModel, len(dos))
+	for j := range dos {
+		dos[j].toBigModel(&ds[j])
+	}
+	if err != nil {
+		return
+	}
+
+	return
 }
 
 func (impl bigmodel) toBigmodelRecordDO(d *domain.UserWithBigModel) BigModelDO {

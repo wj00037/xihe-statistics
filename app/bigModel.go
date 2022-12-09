@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"project/xihe-statistics/domain"
-	"project/xihe-statistics/domain/user"
+	"project/xihe-statistics/domain/repository"
 	"time"
 )
 
@@ -32,10 +32,11 @@ type UserWithBigModelAddCmd struct {
 
 type BigModelRecordService interface {
 	AddUserWithBigModel(cmd *UserWithBigModelAddCmd) error
+	GetBigModelRecordsByType(domain.BigModel) (BigModelDTO, error)
 }
 
 func NewBigModelRecordService(
-	ub user.UserWithBigModel,
+	ub repository.UserWithBigModel,
 ) BigModelRecordService {
 	return bigModelRecordService{
 		ub: ub,
@@ -43,7 +44,7 @@ func NewBigModelRecordService(
 }
 
 type bigModelRecordService struct {
-	ub user.UserWithBigModel
+	ub repository.UserWithBigModel
 }
 
 func (b bigModelRecordService) AddUserWithBigModel(cmd *UserWithBigModelAddCmd) error {
@@ -59,6 +60,27 @@ func (b bigModelRecordService) AddUserWithBigModel(cmd *UserWithBigModelAddCmd) 
 	return nil
 }
 
+func (b bigModelRecordService) GetBigModelRecordsByType(d domain.BigModel) (dto BigModelDTO, err error) {
+	bm, err := b.ub.Get(d)
+	if err != nil {
+		return
+	}
+
+	users := make([]string, len(bm))
+	for j := range bm {
+		users[j] = bm[j].UserName
+	}
+
+	dto = BigModelDTO{
+		BigModel: d.BigModel(),
+		Users:    users,
+		Counts:   len(bm),
+		UpdateAt: time.Now().Format("2006-01-02 15:04:05"),
+	}
+
+	return
+}
+
 func (cmd *UserWithBigModelAddCmd) toBigModel(r *domain.UserWithBigModel) {
 	now := time.Now().Unix()
 
@@ -67,4 +89,14 @@ func (cmd *UserWithBigModelAddCmd) toBigModel(r *domain.UserWithBigModel) {
 		BigModel: cmd.BigModel,
 		CreateAt: now,
 	}
+}
+
+type BigModelDTO struct {
+	BigModel string   `json:"bigmodel"`
+	Users    []string `json:"user_list"`
+	Counts   int      `json:"counts"`
+	UpdateAt string   `json:"update_at"`
+}
+
+type BigModelListDTO struct {
 }
