@@ -1,15 +1,12 @@
 package domain
 
-import "errors"
-
-const (
-	taichuVQA       = "taichu-VQA"
-	taichuTextToImg = "taichu-TextToImg"
-	taichuImgToText = "taichu-ImgToText"
-	luojiaNet       = "luojiaNet"
-	pangu           = "pangu-QA"
-	codegeex        = "codegeex"
+import (
+	"errors"
 )
+
+var bigModelTypeList = []string{"taichu-VQA", "taichu-TextToImg",
+	"taichu-ImgToText", "luojiaNet", "pangu-QA",
+	"codegeex"}
 
 // BigModel
 type BigModel interface {
@@ -21,13 +18,13 @@ func NewBigModel(t string) (BigModel, error) {
 		return nil, errors.New("bigmodel can not be null")
 	}
 
-	if !(t == taichuVQA ||
-		t == taichuTextToImg ||
-		t == taichuImgToText ||
-		t == luojiaNet ||
-		t == pangu ||
-		t == codegeex) {
-		return nil, errors.New("can not support this bigmodel type")
+	for j, bt := range bigModelTypeList {
+		if t == bt {
+			break
+		}
+		if j == len(bigModelTypeList)-1 {
+			return nil, errors.New("can not support this bigmodel type")
+		}
 	}
 
 	return bigModel(t), nil
