@@ -20,21 +20,29 @@ func NewBigModel(t string) (BigModel, error) {
 		return nil, errors.New("bigmodel can not be null")
 	}
 
+	if isBigModelType(t) {
+		return nil, errors.New("can not support this bigmodel type")
+	}
+
+	return bigModel(t), nil
+}
+
+func isBigModelType(t string) bool {
 	bigModelTypeList := GetBigModelTypeList()
 	for j, bt := range bigModelTypeList {
 		if t == bt {
 			break
 		}
 		if j == len(bigModelTypeList)-1 {
-			return nil, errors.New("can not support this bigmodel type")
+			return false
 		}
 	}
 
-	return bigModel(t), nil
+	return true
 }
 
 type bigModel string
 
-func (t bigModel) BigModel() string {
-	return string(t)
+func (b bigModel) BigModel() string {
+	return string(b)
 }
