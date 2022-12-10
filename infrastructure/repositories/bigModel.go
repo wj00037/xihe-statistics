@@ -32,11 +32,7 @@ func (b *BigModelDO) toBigModel(d *domain.UserWithBigModel) (err error) {
 }
 
 func (impl bigmodel) Add(d *domain.UserWithBigModel) error {
-	err := impl.mapper.Add(impl.toBigmodelRecordDO(d))
-	if err != nil {
-		return err
-	}
-	return nil
+	return impl.mapper.Add(impl.toBigmodelRecordDO(d))
 }
 
 func (impl bigmodel) Get(d domain.BigModel) (ds []domain.UserWithBigModel, err error) {

@@ -31,7 +31,7 @@ type BigModelRecordController struct {
 // @Summary Add
 // @Description add user query bigmodel record
 // @Tags  D1
-// @Param	type	path	string	true	"owner of project"
+// @Param  body  body  QueryBigModelRequest  true  "body of bigmodel records"
 // @Accept json
 // @Success 200 {object}
 // @Produce json
