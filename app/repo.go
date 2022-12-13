@@ -12,6 +12,7 @@ type RepoRecordAddCmd struct {
 
 type RepoRecordService interface {
 	Add(*RepoRecordAddCmd) error
+	Get() (RepoRecordDTO, error)
 }
 
 func NewRepoRecordService(
@@ -33,6 +34,20 @@ func (s repoRecordService) Add(cmd *RepoRecordAddCmd) (err error) {
 	return s.ur.Add(uwr)
 }
 
+func (s repoRecordService) Get() (dto RepoRecordDTO, err error) {
+	rr, err := s.ur.Get()
+	if err != nil {
+		return
+	}
+
+	dto = RepoRecordDTO{
+		Users:    rr.Users,
+		Counts:   rr.Counts,
+		UpdateAt: time.Now().Format("2006-01-02 15:04:05+08:00"),
+	}
+	return
+}
+
 func (cmd RepoRecordAddCmd) toRepo(ur *domain.UserWithRepo) {
 	now := time.Now().Unix()
 
@@ -41,5 +56,10 @@ func (cmd RepoRecordAddCmd) toRepo(ur *domain.UserWithRepo) {
 		RepoName: cmd.RepoName,
 		CreateAt: now,
 	}
+}
 
+type RepoRecordDTO struct {
+	Users    []string `json:"users"`
+	Counts   int      `json:"counts"`
+	UpdateAt string   `json:"update_at"`
 }

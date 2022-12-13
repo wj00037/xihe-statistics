@@ -17,6 +17,7 @@ func AddRouterForRepoRecordController(
 	}
 
 	rg.POST("/v1/d1/repo", ctl.AddRepoRecord)
+	rg.GET("/v1/d1/repo", ctl.GetRepoRecord)
 
 }
 
@@ -55,4 +56,23 @@ func (ctl *RepoRecordController) AddRepoRecord(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, newResponseData("success"))
+}
+
+// @Summary Get
+// @Description get user create repository record
+// @Tags  D1
+// @Accept json
+// @Success 200 {object}
+// @Produce json
+// @Router /v1/d1/repo [get]
+func (ctl *RepoRecordController) GetRepoRecord(ctx *gin.Context) {
+
+	rrd, err := ctl.rs.Get()
+	if err != nil {
+		ctl.sendRespWithInternalError(ctx, newResponseError(err))
+
+		return
+	}
+
+	ctx.JSON(http.StatusOK, newResponseData(rrd))
 }

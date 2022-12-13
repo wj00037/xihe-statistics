@@ -8,6 +8,7 @@ import (
 // repo record
 type UserWithRepoMapper interface {
 	Add(UserWithRepoDO) error
+	Get() (RepoRecordsDO, error)
 }
 
 func NewUserWithRepoRepository(mapper UserWithRepoMapper) repository.UserWithRepo {
@@ -24,8 +25,19 @@ type UserWithRepoDO struct {
 	CreateAt int64
 }
 
+type RepoRecordsDO struct {
+	Users  []string
+	Counts int
+}
+
 func (impl userWithRepo) Add(u *domain.UserWithRepo) error {
 	return impl.mapper.Add(impl.toUserWithRepoDO(u))
+}
+
+func (impl userWithRepo) Get() (r repository.RepoRecords, err error) {
+	do, err := impl.mapper.Get()
+	r = impl.toRepoRecord(do)
+	return
 }
 
 func (impl userWithRepo) toUserWithRepoDO(u *domain.UserWithRepo) UserWithRepoDO {
@@ -36,4 +48,11 @@ func (impl userWithRepo) toUserWithRepoDO(u *domain.UserWithRepo) UserWithRepoDO
 	}
 
 	return do
+}
+
+func (impl userWithRepo) toRepoRecord(r RepoRecordsDO) repository.RepoRecords {
+	return repository.RepoRecords{
+		Users:  r.Users,
+		Counts: r.Counts,
+	}
 }

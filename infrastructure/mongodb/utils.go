@@ -85,7 +85,7 @@ func (cli *client) createDoc(
 	return nil
 }
 
-func (cli *client) find(
+func (cli *client) filter(
 	ctx context.Context, collection string,
 	filterOfDoc, result interface{},
 ) error {

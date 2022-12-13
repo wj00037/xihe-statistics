@@ -38,6 +38,35 @@ func (col userWithRepo) Add(
 	return
 }
 
+func (col userWithRepo) Get() (
+	r repositories.RepoRecordsDO,
+	err error,
+) {
+	if err != nil {
+		return
+	}
+
+	f := func(ctx context.Context) error {
+		users, err := cli.collection(col.collectionName).Distinct(
+			ctx,
+			"username",
+			bson.M{},
+		)
+		r = repositories.RepoRecordsDO{
+			Users:  toArryString(users),
+			Counts: len(users),
+		}
+
+		return err
+	}
+
+	if err = withContext(f); err != nil {
+		return
+	}
+
+	return
+}
+
 func (col userWithRepo) toUserWithRepoDoc(u *repositories.UserWithRepoDO) (bson.M, error) {
 	docObj := UserWithRepoItem{
 		UserName: u.UserName,
@@ -46,4 +75,13 @@ func (col userWithRepo) toUserWithRepoDoc(u *repositories.UserWithRepoDO) (bson.
 	}
 
 	return genDoc(docObj)
+}
+
+func toArryString(ar []interface{}) []string {
+	arryString := make([]string, len(ar))
+
+	for j, v := range ar {
+		arryString[j] = v.(string)
+	}
+	return arryString
 }

@@ -47,7 +47,7 @@ func (col bigModel) Get(t string) (dos []repositories.BigModelDO, err error) {
 	}
 
 	f := func(ctx context.Context) error {
-		return cli.find(
+		return cli.filter(
 			ctx, col.collectionName,
 			filter, &items,
 		)
