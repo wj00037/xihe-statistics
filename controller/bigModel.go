@@ -81,6 +81,7 @@ func (ctl *BigModelRecordController) Get(ctx *gin.Context) {
 
 	bmd, err := ctl.bs.GetBigModelRecordsByType(bigmodel)
 	if err != nil {
+		ctl.sendRespWithInternalError(ctx, newResponseError(err))
 		return
 	}
 
@@ -98,6 +99,7 @@ func (ctl *BigModelRecordController) GetAll(ctx *gin.Context) {
 
 	bmd, err := ctl.bs.GetBigModelRecordAll()
 	if err != nil {
+		ctl.sendRespWithInternalError(ctx, newResponseError(err))
 		return
 	}
 

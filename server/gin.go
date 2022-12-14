@@ -71,6 +71,10 @@ func setRouter(engine *gin.Engine) {
 		controller.AddRouterForRepoRecordController(
 			v1, repoRecord,
 		)
+
+		controller.AddRouterForD1Controller(
+			v1, bigModelRecord, repoRecord,
+		)
 	}
 
 	engine.UseRawPath = true

@@ -65,6 +65,28 @@ func (col bigModel) Get(t string) (dos []repositories.BigModelDO, err error) {
 	return
 }
 
+func (col bigModel) GetAll() (dos []repositories.BigModelDO, err error) {
+	var items []BigModelRecordItem
+
+	f := func(ctx context.Context) error {
+		return cli.filter(
+			ctx, col.collectionName,
+			bson.M{}, &items,
+		)
+	}
+
+	if err = withContext(f); err != nil {
+		return
+	}
+
+	dos = make([]repositories.BigModelDO, len(items))
+	for j := range items {
+		col.toBigModelDO(items[j], &dos[j])
+	}
+
+	return
+}
+
 func (col bigModel) toBigModelDoc(b repositories.BigModelDO) (bson.M, error) {
 	docObj := BigModelRecordItem{
 		UserName: b.UserName,

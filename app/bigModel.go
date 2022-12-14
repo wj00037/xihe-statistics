@@ -2,7 +2,6 @@ package app
 
 import (
 	"errors"
-	"fmt"
 	"project/xihe-statistics/domain"
 	"project/xihe-statistics/domain/repository"
 	"time"
@@ -107,7 +106,6 @@ func (b bigModelRecordService) GetBigModelRecordAll() (dto BigModelAllDTO, err e
 			users[j] = bm[j].UserName
 		}
 		users = RemoveRepeatedElement(users) // TODO: maybe there is way to optimize
-		fmt.Printf("users: %v\n", users)
 
 		duplicate_counts += len(users)
 		usersAll = append(usersAll, users...)

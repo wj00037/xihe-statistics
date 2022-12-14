@@ -8,6 +8,7 @@ import (
 type BigModelMapper interface {
 	Add(BigModelDO) error
 	Get(string) ([]BigModelDO, error)
+	GetAll() ([]BigModelDO, error)
 }
 
 func NewBigModelRecordRepository(mapper BigModelMapper) repository.UserWithBigModel {
@@ -22,13 +23,6 @@ type BigModelDO struct {
 	UserName string
 	BigModel string
 	CreateAt int64
-}
-
-func (b *BigModelDO) toBigModel(d *domain.UserWithBigModel) (err error) {
-	d.UserName = b.UserName
-	d.BigModel, err = domain.NewBigModel(b.BigModel)
-	d.CreateAt = b.CreateAt
-	return
 }
 
 func (impl bigmodel) Add(d *domain.UserWithBigModel) error {
@@ -49,6 +43,20 @@ func (impl bigmodel) Get(d domain.BigModel) (ds []domain.UserWithBigModel, err e
 	return
 }
 
+func (impl bigmodel) GetAll() (ds []domain.UserWithBigModel, err error) {
+	dos, err := impl.mapper.GetAll()
+
+	ds = make([]domain.UserWithBigModel, len(dos))
+	for j := range dos {
+		dos[j].toBigModel(&ds[j])
+	}
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 func (impl bigmodel) toBigmodelRecordDO(d *domain.UserWithBigModel) BigModelDO {
 	do := BigModelDO{
 		UserName: d.UserName,
@@ -57,4 +65,11 @@ func (impl bigmodel) toBigmodelRecordDO(d *domain.UserWithBigModel) BigModelDO {
 	}
 
 	return do
+}
+
+func (b *BigModelDO) toBigModel(d *domain.UserWithBigModel) (err error) {
+	d.UserName = b.UserName
+	d.BigModel, err = domain.NewBigModel(b.BigModel)
+	d.CreateAt = b.CreateAt
+	return
 }

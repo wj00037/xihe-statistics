@@ -20,7 +20,7 @@ func NewBigModel(t string) (BigModel, error) {
 		return nil, errors.New("bigmodel can not be null")
 	}
 
-	if isBigModelType(t) {
+	if !isBigModelType(t) {
 		return nil, errors.New("can not support this bigmodel type")
 	}
 
