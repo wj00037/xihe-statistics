@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/fsnotify/fsnotify"
@@ -32,7 +33,23 @@ type MongodbCollections struct {
 }
 
 type Message struct {
-	KafKaConfig string `mapstructure:"kafka_config"`
+	KafKaConfigFile string `mapstructure:"kafka_config_file"`
+	*KafKaConfig
+}
+
+type KafKaConfig struct {
+	// AccessEndpoint is used to send back the message.
+	AccessEndpoint string `mapstructure:"access_endpoint"`
+	AccessHmac     string `mapstructure:"access_hmac"`
+
+	Topic     string `mapstructure:"topic"`
+	UserAgent string `mapstructure:"user_agent"`
+
+	// The unit is Gbyte
+	SizeOfWorspace int `mapstructure:"size_of_workspace"`
+
+	// The unit is Gbyte
+	AverageRepoSize int `mapstructure:"average_repo_size"`
 }
 
 // Init 整个服务配置文件初始化的方法
@@ -63,4 +80,28 @@ func Init(filePath string) (err error) {
 		}
 	})
 	return
+}
+
+func (cfg *KafKaConfig) ConcurrentSize() int {
+	return cfg.SizeOfWorspace / (cfg.AverageRepoSize) / 2
+}
+
+func (cfg *KafKaConfig) Validate() error {
+	if cfg.Topic == "" {
+		return errors.New("missing topic")
+	}
+
+	if cfg.UserAgent == "" {
+		return errors.New("missing user_agent")
+	}
+
+	if cfg.AverageRepoSize <= 0 {
+		return errors.New("invalid average_repo_size")
+	}
+
+	if cfg.ConcurrentSize() <= 0 {
+		return errors.New("the concurrent size <= 0")
+	}
+
+	return nil
 }

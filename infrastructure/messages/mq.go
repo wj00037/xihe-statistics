@@ -1,15 +1,10 @@
 package messages
 
 import (
-	"context"
 	"errors"
 	"io/ioutil"
-	"os"
-	"os/signal"
 	"regexp"
 	"strings"
-	"sync"
-	"syscall"
 
 	"github.com/opensourceways/community-robot-lib/kafka"
 	"github.com/opensourceways/community-robot-lib/mq"
@@ -81,43 +76,4 @@ func ParseAddress(addresses string) []string {
 	}
 
 	return r
-}
-
-func Run(d *syncrepo.SyncRepo, log *logrus.Entry) {
-	sig := make(chan os.Signal, 1)
-	signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
-
-	var wg sync.WaitGroup
-	defer wg.Wait()
-
-	called := false
-	ctx, done := context.WithCancel(context.Background())
-
-	defer func() {
-		if !called {
-			called = true
-			done()
-		}
-	}()
-
-	wg.Add(1)
-	go func(ctx context.Context) {
-		defer wg.Done()
-
-		select {
-		case <-ctx.Done():
-			log.Info("receive done. exit normally")
-			return
-
-		case <-sig:
-			log.Info("receive exit signal")
-			done()
-			called = true
-			return
-		}
-	}(ctx)
-
-	if err := d.Run(ctx, log); err != nil {
-		log.Errorf("subscribe failed, err:%v", err)
-	}
 }

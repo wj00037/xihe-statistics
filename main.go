@@ -1,7 +1,12 @@
 package main
 
 import (
+	"context"
 	"flag"
+	"os"
+	"os/signal"
+	"sync"
+	"syscall"
 	"time"
 
 	"github.com/opensourceways/community-robot-lib/kafka"
@@ -66,7 +71,7 @@ func main() {
 	}
 
 	// kafka
-	kafkaCfg, err := messages.LoadKafkaConfig(config.Conf.Message.KafKaConfig)
+	kafkaCfg, err := messages.LoadKafkaConfig(config.Conf.Message.KafKaConfigFile)
 	if err != nil {
 		log.Errorf("Error loading kfk config, err:%v", err)
 
@@ -92,6 +97,47 @@ func main() {
 
 	defer mongodb.Close()
 
+	// mq
+
 	// gin
 	server.StartWebServer(config.Conf.HttpPort, time.Duration(config.Conf.Duration))
+}
+
+func run(d *messages.BigModel, log *logrus.Entry) {
+	sig := make(chan os.Signal, 1)
+	signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
+
+	var wg sync.WaitGroup
+	defer wg.Wait()
+
+	called := false
+	ctx, done := context.WithCancel(context.Background())
+
+	defer func() {
+		if !called {
+			called = true
+			done()
+		}
+	}()
+
+	wg.Add(1)
+	go func(ctx context.Context) {
+		defer wg.Done()
+
+		select {
+		case <-ctx.Done():
+			log.Info("receive done. exit normally")
+			return
+
+		case <-sig:
+			log.Info("receive exit signal")
+			done()
+			called = true
+			return
+		}
+	}(ctx)
+
+	if err := d.Run(ctx, log); err != nil {
+		log.Errorf("subscribe failed, err:%v", err)
+	}
 }
