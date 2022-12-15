@@ -4,11 +4,13 @@ import (
 	"flag"
 	"time"
 
+	"github.com/opensourceways/community-robot-lib/kafka"
 	"github.com/opensourceways/community-robot-lib/logrusutil"
 	"github.com/sirupsen/logrus"
 
 	"project/xihe-statistics/config"
 	"project/xihe-statistics/controller"
+	"project/xihe-statistics/infrastructure/messages"
 	"project/xihe-statistics/infrastructure/mongodb"
 	"project/xihe-statistics/server"
 )
@@ -62,6 +64,22 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	// kafka
+	kafkaCfg, err := messages.LoadKafkaConfig(config.Conf.Message.KafKaConfig)
+	if err != nil {
+		log.Errorf("Error loading kfk config, err:%v", err)
+
+		return
+	}
+
+	if err = messages.ConnectKafKa(&kafkaCfg); err != nil {
+		log.Errorf("Error connecting kfk mq, err:%v", err)
+
+		return
+	}
+
+	defer kafka.Disconnect()
 
 	// controller
 	controller.Init(log)

@@ -14,6 +14,7 @@ type SrvConfig struct {
 	HttpPort int    `mapstructure:"http_port"`
 	Duration int    `mapstructure:"duration"`
 	*Mongodb `mapstructure:"mongodb"`
+	*Message `mapstructure:"message"`
 }
 
 type Mongodb struct {
@@ -28,6 +29,10 @@ type MongodbCollections struct {
 	Repo     string `mapstructure:"repo"`
 	D1       string `mapstructure:"d1"`
 	D2       string `mapstructure:"d2"`
+}
+
+type Message struct {
+	KafKaConfig string `mapstructure:"kafka_config"`
 }
 
 // Init 整个服务配置文件初始化的方法
