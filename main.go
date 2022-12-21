@@ -1,64 +1,28 @@
 package main
 
 import (
-	"context"
+	"encoding/json"
 	"flag"
-	"os"
-	"os/signal"
-	"sync"
-	"syscall"
+	"fmt"
 	"time"
 
-	"github.com/opensourceways/community-robot-lib/kafka"
+	"github.com/Shopify/sarama"
 	"github.com/opensourceways/community-robot-lib/logrusutil"
 	"github.com/sirupsen/logrus"
 
+	"project/xihe-statistics/app"
 	"project/xihe-statistics/config"
 	"project/xihe-statistics/controller"
-	"project/xihe-statistics/infrastructure/messages"
+	"project/xihe-statistics/domain"
 	"project/xihe-statistics/infrastructure/mongodb"
+	"project/xihe-statistics/infrastructure/pgsql"
+	"project/xihe-statistics/infrastructure/repositories"
 	"project/xihe-statistics/server"
 )
-
-// type options struct {
-// 	service     liboptions.ServiceOptions
-// 	enableDebug bool
-// }
-
-// func (o *options) Validate() error {
-// 	return o.service.Validate()
-// }
-
-// func gatherOptions(fs *flag.FlagSet, args ...string) options {
-// 	var o options
-
-// 	o.service.AddFlags(fs)
-
-// 	fs.BoolVar(
-// 		&o.enableDebug, "enable_debug", false,
-// 		"whether to enable debug model.",
-// 	)
-
-// 	fs.Parse(args)
-// 	return o
-// }
 
 func main() {
 	logrusutil.ComponentInit("xihe-statistics")
 	log := logrus.NewEntry(logrus.StandardLogger())
-
-	// o := gatherOptions(
-	// 	flag.NewFlagSet(os.Args[0], flag.ExitOnError),
-	// 	os.Args[1:]...,
-	// )
-	// if err := o.Validate(); err != nil {
-	// 	logrus.Fatalf("Invalid options, err:%s", err.Error())
-	// }
-
-	// if o.enableDebug {
-	// 	logrus.SetLevel(logrus.DebugLevel)
-	// 	logrus.Debug("debug enabled.")
-	// }
 
 	// cfg
 	var cfg string
@@ -70,24 +34,13 @@ func main() {
 		panic(err)
 	}
 
-	// kafka
-	kafkaCfg, err := messages.LoadKafkaConfig(config.Conf.Message.KafKaConfigFile)
-	if err != nil {
-		log.Errorf("Error loading kfk config, err:%v", err)
-
-		return
-	}
-
-	if err = messages.ConnectKafKa(&kafkaCfg); err != nil {
-		log.Errorf("Error connecting kfk mq, err:%v", err)
-
-		return
-	}
-
-	defer kafka.Disconnect()
-
 	// controller
 	controller.Init(log)
+
+	// pgsql
+	if err := pgsql.Initialize(config.Conf.PGSQL); err != nil {
+		logrus.Fatalf("initialize pgsql failed, err:%s", err.Error())
+	}
 
 	// mongodb
 	m := config.Conf.Mongodb
@@ -98,46 +51,121 @@ func main() {
 	defer mongodb.Close()
 
 	// mq
+	kafkaAddress := config.Conf.Message.KafKaAddress
+	topic := config.Conf.Message.KafKaConfig.Topic
+	go receive(kafkaAddress, topic) // TODO: goroutine must handle all msg even main process end
 
 	// gin
 	server.StartWebServer(config.Conf.HttpPort, time.Duration(config.Conf.Duration))
 }
 
-func run(d *messages.BigModel, log *logrus.Entry) {
-	sig := make(chan os.Signal, 1)
-	signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
+type msgBigModelCmd struct {
+	UserName string `json:"username"`
+	BigModel string `json:"bigmodel"`
+}
 
-	var wg sync.WaitGroup
-	defer wg.Wait()
+func toCmd(msg string) (cmd app.UserWithBigModelAddCmd, err error) {
+	var msgCmd msgBigModelCmd
+	json.Unmarshal([]byte(msg), &msgCmd)
+	fmt.Printf("msgCmd: %v\n", msgCmd)
+	if cmd.BigModel, err = domain.NewBigModel(msgCmd.BigModel); err != nil {
+		return
+	}
 
-	called := false
-	ctx, done := context.WithCancel(context.Background())
+	cmd.UserName = msgCmd.UserName
 
-	defer func() {
-		if !called {
-			called = true
-			done()
-		}
-	}()
+	return
+}
 
-	wg.Add(1)
-	go func(ctx context.Context) {
-		defer wg.Done()
+func bigModelTask(msg string) error {
+	// mq
+	collections := config.Conf.Mongodb.MongodbCollections
 
+	bigModelRecord := repositories.NewBigModelRecordRepository(
+		mongodb.NewBigModelMapper(collections.BigModel),
+	)
+
+	service := app.NewBigModelRecordService(bigModelRecord)
+
+	cmd, err := toCmd(msg)
+	if err != nil {
+		return err
+	}
+	service.AddUserWithBigModel(&cmd)
+
+	return nil
+}
+
+func receive(address string, topic string) {
+	//配置
+	config := sarama.NewConfig()
+	//接收失败通知
+	config.Consumer.Return.Errors = true
+	//设置kafka版本号
+	config.Version = sarama.V3_1_0_0
+	//新建一个消费者
+	consumer, err := sarama.NewConsumer([]string{address}, config)
+	if err != nil {
+		fmt.Printf("err: %v\n", err)
+		panic("create comsumer failed")
+	}
+	defer consumer.Close()
+	//特定分区消费者，需要设置主题，分区和偏移量，sarama.OffsetNewest表示每次从最新的消息开始消费
+	partitionConsumer, err := consumer.ConsumePartition(topic, 0, sarama.OffsetNewest)
+	if err != nil {
+		fmt.Printf("err: %v\n", err)
+		fmt.Println("error get partition sonsumer")
+	}
+	defer partitionConsumer.Close()
+
+	for {
 		select {
-		case <-ctx.Done():
-			log.Info("receive done. exit normally")
-			return
-
-		case <-sig:
-			log.Info("receive exit signal")
-			done()
-			called = true
-			return
+		case msg := <-partitionConsumer.Messages():
+			err2 := bigModelTask(string(msg.Value))
+			if err2 != nil {
+				panic(err2)
+			}
+		case err := <-partitionConsumer.Errors():
+			fmt.Println(err.Err)
 		}
-	}(ctx)
-
-	if err := d.Run(ctx, log); err != nil {
-		log.Errorf("subscribe failed, err:%v", err)
 	}
 }
+
+// func run(d *messages.BigModel, log *logrus.Entry) {
+// 	sig := make(chan os.Signal, 1)
+// 	signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
+
+// 	var wg sync.WaitGroup
+// 	defer wg.Wait()
+
+// 	called := false
+// 	ctx, done := context.WithCancel(context.Background())
+
+// 	defer func() {
+// 		if !called {
+// 			called = true
+// 			done()
+// 		}
+// 	}()
+
+// 	wg.Add(1)
+// 	go func(ctx context.Context) {
+// 		defer wg.Done()
+
+// 		select {
+// 		case <-ctx.Done():
+// 			log.Info("receive done. exit normally")
+// 			return
+
+// 		case <-sig:
+// 			log.Info("receive exit signal")
+// 			done()
+// 			called = true
+// 			return
+// 		}
+// 	}(ctx)
+
+// 	if err := d.Run(ctx, log); err != nil {
+// 		log.Errorf("subscribe failed, err:%v", err)
+// 	}
+// }
