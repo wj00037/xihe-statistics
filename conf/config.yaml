@@ -11,3 +11,17 @@ mongodb:
     repo: "repoRecord"
     d1: "d1"
     d2: "d2"
+
+pgsql:
+  host: "127.0.0.1"
+  port: "5432"
+  user: "xihe"
+  db_name: "xihe-statistics"
+  password: "password@1"
+
+message:
+  kafka_address: "47.106.222.191:10004"
+  kafka_config:
+    topic: "xihe-statistics2"
+    size_of_workspace: 1
+    average_repo_size: 1

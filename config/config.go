@@ -14,8 +14,17 @@ type SrvConfig struct {
 	Name     string `mapstructure:"name"`
 	HttpPort int    `mapstructure:"http_port"`
 	Duration int    `mapstructure:"duration"`
+	*PGSQL   `mapstructure:"pgsql"`
 	*Mongodb `mapstructure:"mongodb"`
 	*Message `mapstructure:"message"`
+}
+
+type PGSQL struct {
+	Host     string `mapstructure:"host"`
+	Port     string `mapstructure:"port"`
+	User     string `mapstructure:"user"`
+	DBName   string `mapstructure:"db_name"`
+	Password string `mapstructure:"password"`
 }
 
 type Mongodb struct {
@@ -33,8 +42,8 @@ type MongodbCollections struct {
 }
 
 type Message struct {
-	KafKaConfigFile string `mapstructure:"kafka_config_file"`
-	*KafKaConfig
+	KafKaAddress string `mapstructure:"kafka_address"`
+	*KafKaConfig `mapstructure:"kafka_config"`
 }
 
 type KafKaConfig struct {
