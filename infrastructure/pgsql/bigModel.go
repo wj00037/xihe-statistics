@@ -35,11 +35,48 @@ func (m bigModel) Add(
 	return
 }
 
-func (m bigModel) Get(string) (do []repositories.BigModelDO, err error) {
+func (m bigModel) Get(t string) (cols []repositories.BigModelDO, err error) {
+
+	var records []BigModelRecord
+
+	f := func(ctx context.Context) error {
+		return cli.filter(
+			ctx, m.table,
+			t, &records,
+		)
+	}
+
+	if err = withContext(f); err != nil {
+		return
+	}
+
+	cols = make([]repositories.BigModelDO, len(records))
+	for j := range records {
+		m.toBigModelDO(records[j], &cols[j])
+	}
+
 	return
 }
 
-func (m bigModel) GetAll() (do []repositories.BigModelDO, err error) {
+func (m bigModel) GetAll() (cols []repositories.BigModelDO, err error) {
+	var records []BigModelRecord
+
+	f := func(ctx context.Context) error {
+		return cli.all(
+			ctx, m.table,
+			&records,
+		)
+	}
+
+	if err = withContext(f); err != nil {
+		return
+	}
+
+	cols = make([]repositories.BigModelDO, len(records))
+	for j := range records {
+		m.toBigModelDO(records[j], &cols[j])
+	}
+
 	return
 }
 
@@ -53,7 +90,7 @@ func (m bigModel) toBigModelCol(b repositories.BigModelDO) (BigModelRecord, erro
 	return ColObj, nil
 }
 
-func (m bigModel) toBigModelDO(v BigModelRecordItem, do *repositories.BigModelDO) {
+func (m bigModel) toBigModelDO(v BigModelRecord, do *repositories.BigModelDO) {
 	*do = repositories.BigModelDO{
 		UserName: v.UserName,
 		BigModel: v.BigModel,

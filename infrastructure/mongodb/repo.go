@@ -42,9 +42,6 @@ func (col userWithRepo) Get() (
 	r repositories.RepoRecordsDO,
 	err error,
 ) {
-	if err != nil {
-		return
-	}
 
 	f := func(ctx context.Context) error {
 		users, err := cli.collection(col.collectionName).Distinct(

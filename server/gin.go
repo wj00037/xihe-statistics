@@ -11,10 +11,9 @@ import (
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
-	"project/xihe-statistics/config"
 	"project/xihe-statistics/controller"
 	"project/xihe-statistics/docs"
-	"project/xihe-statistics/infrastructure/mongodb"
+	"project/xihe-statistics/infrastructure/pgsql"
 	"project/xihe-statistics/infrastructure/repositories"
 )
 
@@ -48,16 +47,25 @@ func setRouter(engine *gin.Engine) {
 	docs.SwaggerInfo.Title = "xihe-statistics"
 	docs.SwaggerInfo.Description = ""
 
-	collections := config.Conf.Mongodb.MongodbCollections
+	// collections := config.Conf.Mongodb.MongodbCollections
 
-	// infrastructure.repositories -> domain.repository (NewxxxxRepository)
+	// // infrastructure.repositories -> domain.repository (NewxxxxRepository)
+	// bigModelRecord := repositories.NewBigModelRecordRepository(
+	// 	// infrastructure.mongodb -> infrastructure.repositories (mapper)
+	// 	mongodb.NewBigModelMapper(collections.BigModel),
+	// )
+
 	bigModelRecord := repositories.NewBigModelRecordRepository(
 		// infrastructure.mongodb -> infrastructure.repositories (mapper)
-		mongodb.NewBigModelMapper(collections.BigModel),
+		pgsql.NewBigModelMapper(pgsql.BigModelRecord{}),
 	)
 
+	// repoRecord := repositories.NewUserWithRepoRepository(
+	// 	mongodb.NewUserWithRepoMapper(collections.Repo),
+	// )
+
 	repoRecord := repositories.NewUserWithRepoRepository(
-		mongodb.NewUserWithRepoMapper(collections.Repo),
+		pgsql.NewUserWithRepoMapper(pgsql.UserWithRepo{}),
 	)
 
 	// controller -> gin
