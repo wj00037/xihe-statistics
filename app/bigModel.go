@@ -123,12 +123,15 @@ func (b bigModelRecordService) GetBigModelRecordAll() (dto BigModelAllDTO, err e
 }
 
 func (cmd *UserWithBigModelAddCmd) toBigModel(r *domain.UserWithBigModel) {
-	now := time.Now().Unix()
+	var createAt int64
+	if createAt = cmd.CreateAt; cmd.CreateAt == 0 {
+		createAt = time.Now().Unix()
+	}
 
 	*r = domain.UserWithBigModel{
 		UserName: cmd.UserName,
 		BigModel: cmd.BigModel,
-		CreateAt: now,
+		CreateAt: createAt,
 	}
 }
 

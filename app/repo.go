@@ -49,12 +49,15 @@ func (s repoRecordService) Get() (dto RepoRecordDTO, err error) {
 }
 
 func (cmd RepoRecordAddCmd) toRepo(ur *domain.UserWithRepo) {
-	now := time.Now().Unix()
+	var createAt int64
+	if createAt = cmd.CreateAt; cmd.CreateAt == 0 {
+		createAt = time.Now().Unix()
+	}
 
 	*ur = domain.UserWithRepo{
 		UserName: cmd.UserName,
 		RepoName: cmd.RepoName,
-		CreateAt: now,
+		CreateAt: createAt,
 	}
 }
 
