@@ -2,6 +2,16 @@ name: "xihe-statistics"
 http_port: 8080
 duration: 180
 
+kafka_config_file: "conf/mqconfig"
+
+mq_config:
+  access_endpoint: ""
+  access_hmac: ""
+  topic: "xihe-statistics2"
+  user_agent: ""
+  size_of_workspace: 1
+  average_repo_size: 1
+
 mongodb:
   db_name: "xihe"
   db_conn: "mongodb://xiheAdmin:Password11@127.0.0.1:27017/xihe?timeoutMS=5000"

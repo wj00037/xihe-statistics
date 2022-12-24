@@ -11,12 +11,53 @@ import (
 var Conf = new(SrvConfig)
 
 type SrvConfig struct {
-	Name     string `mapstructure:"name"`
-	HttpPort int    `mapstructure:"http_port"`
-	Duration int    `mapstructure:"duration"`
-	*PGSQL   `mapstructure:"pgsql"`
-	*Mongodb `mapstructure:"mongodb"`
-	*Message `mapstructure:"message"`
+	Name            string `mapstructure:"name"`
+	HttpPort        int    `mapstructure:"http_port"`
+	Duration        int    `mapstructure:"duration"`
+	KafKaConfigFile string `mapstructure:"kafka_config_file"`
+	*MQConfig       `mapstructure:"mq_config"`
+	*PGSQL          `mapstructure:"pgsql"`
+	*Mongodb        `mapstructure:"mongodb"`
+	*Message        `mapstructure:"message"`
+}
+
+type MQConfig struct {
+	// AccessEndpoint is used to send back the message.
+	AccessEndpoint string `mapstructure:"access_endpoint"  required:"true"`
+	AccessHmac     string `mapstructure:"access_hmac"      required:"true"`
+
+	Topic     string `mapstructure:"topic"                 required:"true"`
+	UserAgent string `mapstructure:"user_agent"            required:"true"`
+
+	// The unit is Gbyte
+	SizeOfWorspace int `mapstructure:"size_of_workspace"   required:"true"`
+
+	// The unit is Gbyte
+	AverageRepoSize int `mapstructure:"average_repo_size"  required:"true"`
+}
+
+func (cfg *MQConfig) ConcurrentSize() int {
+	return cfg.SizeOfWorspace / (cfg.AverageRepoSize) / 2
+}
+
+func (cfg *MQConfig) Validate() error {
+	if cfg.Topic == "" {
+		return errors.New("missing topic")
+	}
+
+	if cfg.UserAgent == "" {
+		return errors.New("missing user_agent")
+	}
+
+	if cfg.AverageRepoSize <= 0 {
+		return errors.New("invalid average_repo_size")
+	}
+
+	if cfg.ConcurrentSize() <= 0 {
+		return errors.New("the concurrent size <= 0")
+	}
+
+	return nil
 }
 
 type PGSQL struct {
