@@ -3,24 +3,7 @@ http_port: 8080
 duration: 180
 
 kafka_config_file: "conf/mqconfig"
-
-mq_config:
-  access_endpoint: ""
-  access_hmac: ""
-  topic: "xihe-statistics2"
-  user_agent: ""
-  size_of_workspace: 1
-  average_repo_size: 1
-
-mongodb:
-  db_name: "xihe"
-  db_conn: "mongodb://xiheAdmin:Password11@127.0.0.1:27017/xihe?timeoutMS=5000"
-  collections:
-    d0: "d0"
-    bigmodel: "bigmodelRecord"
-    repo: "repoRecord"
-    d1: "d1"
-    d2: "d2"
+max_retry: 5
 
 pgsql:
   host: "127.0.0.1"
@@ -29,9 +12,8 @@ pgsql:
   db_name: "xihe-statistics"
   password: "password@1"
 
-message:
-  kafka_address: "47.106.222.191:10004"
-  kafka_config:
-    topic: "xihe-statistics2"
-    size_of_workspace: 1
-    average_repo_size: 1
+mq:
+  address: "47.106.222.191:10004"
+  topics:
+    statistics_bigmodel: "xihe-statistics2"
+    statistics_repo: "statistics_repo"

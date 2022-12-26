@@ -3,11 +3,16 @@ package config
 import (
 	"errors"
 	"fmt"
+	"project/xihe-statistics/infrastructure/messages"
+	"regexp"
+	"strings"
 
 	"github.com/fsnotify/fsnotify"
+	"github.com/opensourceways/community-robot-lib/mq"
 	"github.com/spf13/viper"
 )
 
+var reIpPort = regexp.MustCompile(`^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}:[1-9][0-9]*$`)
 var Conf = new(SrvConfig)
 
 type SrvConfig struct {
@@ -15,49 +20,10 @@ type SrvConfig struct {
 	HttpPort        int    `mapstructure:"http_port"`
 	Duration        int    `mapstructure:"duration"`
 	KafKaConfigFile string `mapstructure:"kafka_config_file"`
-	*MQConfig       `mapstructure:"mq_config"`
+	MaxRetry        int    `mapstructure:"max_retry"`
 	*PGSQL          `mapstructure:"pgsql"`
 	*Mongodb        `mapstructure:"mongodb"`
-	*Message        `mapstructure:"message"`
-}
-
-type MQConfig struct {
-	// AccessEndpoint is used to send back the message.
-	AccessEndpoint string `mapstructure:"access_endpoint"  required:"true"`
-	AccessHmac     string `mapstructure:"access_hmac"      required:"true"`
-
-	Topic     string `mapstructure:"topic"                 required:"true"`
-	UserAgent string `mapstructure:"user_agent"            required:"true"`
-
-	// The unit is Gbyte
-	SizeOfWorspace int `mapstructure:"size_of_workspace"   required:"true"`
-
-	// The unit is Gbyte
-	AverageRepoSize int `mapstructure:"average_repo_size"  required:"true"`
-}
-
-func (cfg *MQConfig) ConcurrentSize() int {
-	return cfg.SizeOfWorspace / (cfg.AverageRepoSize) / 2
-}
-
-func (cfg *MQConfig) Validate() error {
-	if cfg.Topic == "" {
-		return errors.New("missing topic")
-	}
-
-	if cfg.UserAgent == "" {
-		return errors.New("missing user_agent")
-	}
-
-	if cfg.AverageRepoSize <= 0 {
-		return errors.New("invalid average_repo_size")
-	}
-
-	if cfg.ConcurrentSize() <= 0 {
-		return errors.New("the concurrent size <= 0")
-	}
-
-	return nil
+	*MQ             `mapstructure:"mq"`
 }
 
 type PGSQL struct {
@@ -82,24 +48,35 @@ type MongodbCollections struct {
 	D2       string `mapstructure:"d2"`
 }
 
-type Message struct {
-	KafKaAddress string `mapstructure:"kafka_address"`
-	*KafKaConfig `mapstructure:"kafka_config"`
+type MQ struct {
+	Address string          `mapstructure:"address"`
+	Topics  messages.Topics `mapstructure:"topics"`
 }
 
-type KafKaConfig struct {
-	// AccessEndpoint is used to send back the message.
-	AccessEndpoint string `mapstructure:"access_endpoint"`
-	AccessHmac     string `mapstructure:"access_hmac"`
+func (cfg *SrvConfig) GetMQConfig() mq.MQConfig {
+	return mq.MQConfig{
+		Addresses: cfg.MQ.ParseAddress(),
+	}
+}
 
-	Topic     string `mapstructure:"topic"`
-	UserAgent string `mapstructure:"user_agent"`
+func (cfg *MQ) Validate() error {
+	if r := cfg.ParseAddress(); len(r) == 0 {
+		return errors.New("invalid mq address")
+	}
 
-	// The unit is Gbyte
-	SizeOfWorspace int `mapstructure:"size_of_workspace"`
+	return nil
+}
 
-	// The unit is Gbyte
-	AverageRepoSize int `mapstructure:"average_repo_size"`
+func (cfg *MQ) ParseAddress() []string {
+	v := strings.Split(cfg.Address, ",")
+	r := make([]string, 0, len(v))
+	for i := range v {
+		if reIpPort.MatchString(v[i]) {
+			r = append(r, v[i])
+		}
+	}
+
+	return r
 }
 
 // Init 整个服务配置文件初始化的方法
@@ -130,28 +107,4 @@ func Init(filePath string) (err error) {
 		}
 	})
 	return
-}
-
-func (cfg *KafKaConfig) ConcurrentSize() int {
-	return cfg.SizeOfWorspace / (cfg.AverageRepoSize) / 2
-}
-
-func (cfg *KafKaConfig) Validate() error {
-	if cfg.Topic == "" {
-		return errors.New("missing topic")
-	}
-
-	if cfg.UserAgent == "" {
-		return errors.New("missing user_agent")
-	}
-
-	if cfg.AverageRepoSize <= 0 {
-		return errors.New("invalid average_repo_size")
-	}
-
-	if cfg.ConcurrentSize() <= 0 {
-		return errors.New("the concurrent size <= 0")
-	}
-
-	return nil
 }

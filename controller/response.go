@@ -28,7 +28,7 @@ func newResponseError(err error) responseData {
 	}
 }
 
-func newResponseData(data interface{}) responseData { //TODO: why no code and msg?
+func newResponseData(data interface{}) responseData {
 	return responseData{
 		Data: data,
 	}
