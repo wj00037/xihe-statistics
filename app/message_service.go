@@ -22,7 +22,7 @@ type bigModelRecordMessageService struct {
 	ub repository.UserWithBigModel
 }
 
-func (b bigModelRecordMessageService) AddUserWithBigModel(cmd *UserWithBigModelAddCmd) error {
+func (b bigModelRecordMessageService) AddUserWithBigModel(cmd *UserWithBigModelAddCmd) error { // implement app function with infrastructure function
 	v := new(domain.UserWithBigModel)
 	cmd.toBigModel(v)
 

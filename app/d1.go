@@ -1,8 +1,9 @@
 package app
 
 import (
-	"project/xihe-statistics/domain/repository"
 	"time"
+
+	"project/xihe-statistics/domain/repository"
 )
 
 type D1Service interface {

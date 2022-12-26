@@ -3,20 +3,17 @@ package messages
 import (
 	"context"
 	"encoding/json"
-	"project/xihe-statistics/domain"
-	"project/xihe-statistics/domain/message"
 
 	"github.com/opensourceways/community-robot-lib/kafka"
 	"github.com/opensourceways/community-robot-lib/mq"
 	"github.com/sirupsen/logrus"
+
+	"project/xihe-statistics/config"
+	"project/xihe-statistics/domain"
+	"project/xihe-statistics/domain/message"
 )
 
-var topics Topics
-
-type Topics struct {
-	StatisticsBigModel string `mapstructure:"statistics_bigmodel" json:"statistics_bigmodel" required:"true"`
-	StatisticsRepo     string `mapstructure:"statistics_repo" json:"statistics_repo" required:"true"`
-}
+var topics config.Topics
 
 func Subscribe(ctx context.Context, handler interface{}, log *logrus.Entry) error {
 	subscribers := make(map[string]mq.Subscriber)

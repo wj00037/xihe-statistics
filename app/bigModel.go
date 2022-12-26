@@ -2,9 +2,10 @@ package app
 
 import (
 	"errors"
+	"time"
+
 	"project/xihe-statistics/domain"
 	"project/xihe-statistics/domain/repository"
-	"time"
 )
 
 func (cmd *UserWithBigModelAddCmd) Validate() error {

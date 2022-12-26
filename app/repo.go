@@ -1,9 +1,10 @@
 package app
 
 import (
+	"time"
+
 	"project/xihe-statistics/domain"
 	"project/xihe-statistics/domain/repository"
-	"time"
 )
 
 type RepoRecordAddCmd struct {

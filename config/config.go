@@ -3,7 +3,6 @@ package config
 import (
 	"errors"
 	"fmt"
-	"project/xihe-statistics/infrastructure/messages"
 	"regexp"
 	"strings"
 
@@ -49,8 +48,13 @@ type MongodbCollections struct {
 }
 
 type MQ struct {
-	Address string          `mapstructure:"address"`
-	Topics  messages.Topics `mapstructure:"topics"`
+	Address string `mapstructure:"address"`
+	Topics  `mapstructure:"topics"`
+}
+
+type Topics struct {
+	StatisticsBigModel string `mapstructure:"statistics_bigmodel" json:"statistics_bigmodel" required:"true"`
+	StatisticsRepo     string `mapstructure:"statistics_repo" json:"statistics_repo" required:"true"`
 }
 
 func (cfg *SrvConfig) GetMQConfig() mq.MQConfig {

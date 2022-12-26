@@ -47,22 +47,10 @@ func setRouter(engine *gin.Engine) {
 	docs.SwaggerInfo.Title = "xihe-statistics"
 	docs.SwaggerInfo.Description = ""
 
-	// collections := config.Conf.Mongodb.MongodbCollections
-
-	// // infrastructure.repositories -> domain.repository (NewxxxxRepository)
-	// bigModelRecord := repositories.NewBigModelRecordRepository(
-	// 	// infrastructure.mongodb -> infrastructure.repositories (mapper)
-	// 	mongodb.NewBigModelMapper(collections.BigModel),
-	// )
-
 	bigModelRecord := repositories.NewBigModelRecordRepository(
-		// infrastructure.mongodb -> infrastructure.repositories (mapper)
+		// infrastructure.pgsql -> infrastructure.repositories (mapper)
 		pgsql.NewBigModelMapper(pgsql.BigModelRecord{}),
 	)
-
-	// repoRecord := repositories.NewUserWithRepoRepository(
-	// 	mongodb.NewUserWithRepoMapper(collections.Repo),
-	// )
 
 	repoRecord := repositories.NewUserWithRepoRepository(
 		pgsql.NewUserWithRepoMapper(pgsql.UserWithRepo{}),

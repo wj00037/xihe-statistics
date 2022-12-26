@@ -1,10 +1,10 @@
 package messages
 
 import (
+	"github.com/sirupsen/logrus"
+
 	"project/xihe-statistics/app"
 	"project/xihe-statistics/domain"
-
-	"github.com/sirupsen/logrus"
 )
 
 type Handler struct {
@@ -17,7 +17,7 @@ type Handler struct {
 	Repo     app.RepoRecordMessageService
 }
 
-func (h *Handler) AddBigModelRecord(d *domain.UserWithBigModel) error {
+func (h *Handler) AddBigModelRecord(d *domain.UserWithBigModel) error { // implement domain function with app function
 	cmd := app.UserWithBigModelAddCmd{
 		UserWithBigModel: *d,
 	}
