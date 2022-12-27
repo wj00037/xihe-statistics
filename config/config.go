@@ -53,8 +53,7 @@ type MQ struct {
 }
 
 type Topics struct {
-	StatisticsBigModel string `mapstructure:"statistics_bigmodel" json:"statistics_bigmodel" required:"true"`
-	StatisticsRepo     string `mapstructure:"statistics_repo" json:"statistics_repo" required:"true"`
+	Statistics string `mapstructure:"statistics" json:"statistics" required:"true"`
 }
 
 func (cfg *SrvConfig) GetMQConfig() mq.MQConfig {

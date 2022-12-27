@@ -26,17 +26,8 @@ func Subscribe(ctx context.Context, handler interface{}, log *logrus.Entry) erro
 		}
 	}()
 
-	// register bigmodel
-	s, err := registerHandlerForBigModelRecord(handler)
-	if err != nil {
-		return err
-	}
-	if s != nil {
-		subscribers[s.Topic()] = s
-	}
-
-	// register repo
-	s, err = registerHandlerForRepoRecord(handler)
+	// register statistics
+	s, err := registerHandlerForStatistics(handler)
 	if err != nil {
 		return err
 	}
@@ -54,24 +45,24 @@ func Subscribe(ctx context.Context, handler interface{}, log *logrus.Entry) erro
 	return nil
 }
 
-func registerHandlerForBigModelRecord(handler interface{}) (mq.Subscriber, error) {
-	h, ok := handler.(message.BigModelRecordHandler)
-	if !ok {
-		return nil, nil
+func do(handler interface{}, msg *mq.Message) (err error) {
+	if msg == nil {
+		return
 	}
 
-	return kafka.Subscribe(topics.StatisticsBigModel, func(e mq.Event) (err error) {
-		msg := e.Message()
-		if msg == nil {
-			return
-		}
+	body := msgStatistics{}
+	if err = json.Unmarshal(msg.Body, &body); err != nil {
+		return
+	}
 
-		body := msgBigModelRecord{}
-		if err = json.Unmarshal(msg.Body, &body); err != nil {
+	switch body.Type {
+	case "statistics-bigmodel":
+		h, ok := handler.(message.BigModelRecordHandler)
+		if !ok {
 			return
 		}
 		bmr := domain.UserWithBigModel{}
-		if bmr.BigModel, err = domain.NewBigModel(body.BigModel); err != nil {
+		if bmr.BigModel, err = domain.NewBigModel(body.Info); err != nil {
 			return
 		}
 
@@ -79,31 +70,25 @@ func registerHandlerForBigModelRecord(handler interface{}) (mq.Subscriber, error
 		bmr.CreateAt = body.CreateAt
 
 		return h.AddBigModelRecord(&bmr)
-	})
-}
 
-func registerHandlerForRepoRecord(handler interface{}) (mq.Subscriber, error) {
-	h, ok := handler.(message.RepoRecordHandler)
-	if !ok {
-		return nil, nil
-	}
-
-	return kafka.Subscribe(topics.StatisticsRepo, func(e mq.Event) (err error) {
-		msg := e.Message()
-		if msg == nil {
-			return
-		}
-
-		body := msgRepoRecord{}
-		if err = json.Unmarshal(msg.Body, &body); err != nil {
+	case "statistics-repo":
+		h, ok := handler.(message.RepoRecordHandler)
+		if !ok {
 			return
 		}
 
 		uwr := domain.UserWithRepo{}
 		uwr.UserName = body.UserName
-		uwr.RepoName = body.RepoName
+		uwr.RepoName = body.Info
 		uwr.CreateAt = body.CreateAt
 
 		return h.AddRepoRecord(&uwr)
+	}
+	return
+}
+
+func registerHandlerForStatistics(handler interface{}) (mq.Subscriber, error) {
+	return kafka.Subscribe(topics.Statistics, func(e mq.Event) (err error) {
+		return do(handler, e.Message())
 	})
 }
