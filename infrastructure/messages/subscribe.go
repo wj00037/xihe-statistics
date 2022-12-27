@@ -61,11 +61,11 @@ func do(handler interface{}, msg *mq.Message) (err error) {
 		if !ok {
 			return
 		}
+		
 		bmr := domain.UserWithBigModel{}
-		if bmr.BigModel, err = domain.NewBigModel(body.Info); err != nil {
+		if bmr.BigModel, err = domain.NewBigModel(body.Info["bigmodel"]); err != nil {
 			return
 		}
-
 		bmr.UserName = body.UserName
 		bmr.CreateAt = body.CreateAt
 
@@ -79,7 +79,7 @@ func do(handler interface{}, msg *mq.Message) (err error) {
 
 		uwr := domain.UserWithRepo{}
 		uwr.UserName = body.UserName
-		uwr.RepoName = body.Info
+		uwr.RepoName = body.Info["repo_name"]
 		uwr.CreateAt = body.CreateAt
 
 		return h.AddRepoRecord(&uwr)
