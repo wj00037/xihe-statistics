@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"os"
 	"time"
 
 	"github.com/opensourceways/community-robot-lib/logrusutil"
@@ -20,7 +21,7 @@ func main() {
 
 	// cfg
 	var cfg string
-	flag.StringVar(&cfg, "conf", "./conf/config.yaml", "指定配置文件路径")
+	flag.StringVar(&cfg, "conf", os.Getenv("CONFIG_PATH"), "指定配置文件路径")
 	flag.Parse()
 	// loading config file
 	err := config.Init(cfg)
