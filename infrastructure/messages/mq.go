@@ -58,7 +58,7 @@ func NewHandler(cfg *config.SrvConfig, log *logrus.Entry) *Handler {
 
 	return &Handler{
 		Log:      log,
-		MaxRetry: config.Conf.MaxRetry,
+		MaxRetry: config.Conf.MQ.MaxRetry,
 
 		BigModel: bs,
 		Repo:     rs,

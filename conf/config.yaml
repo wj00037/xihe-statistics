@@ -2,9 +2,6 @@ name: "xihe-statistics"
 http_port: 8080
 duration: 180
 
-kafka_config_file: "conf/mqconfig"
-max_retry: 5
-
 pgsql:
   host: "127.0.0.1"
   port: "5432"
@@ -14,5 +11,6 @@ pgsql:
 
 mq:
   address: "47.106.222.191:10004"
+  max_retry: 5
   topics:
     statistics: "xihe-statistics"
