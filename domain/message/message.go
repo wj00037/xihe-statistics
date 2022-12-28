@@ -9,3 +9,7 @@ type BigModelRecordHandler interface {
 type RepoRecordHandler interface {
 	AddRepoRecord(*domain.UserWithRepo) error
 }
+
+type RegisterRecordHandler interface {
+	AddRegisterRecord(*domain.RegisterRecord) error
+}

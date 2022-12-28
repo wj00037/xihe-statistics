@@ -15,6 +15,7 @@ type Handler struct {
 
 	BigModel app.BigModelRecordMessageService
 	Repo     app.RepoRecordMessageService
+	Register app.RegisterRecordMessageService
 }
 
 func (h *Handler) AddBigModelRecord(d *domain.UserWithBigModel) error { // implement domain function with app function
@@ -29,4 +30,8 @@ func (h *Handler) AddRepoRecord(d *domain.UserWithRepo) error {
 		UserWithRepo: *d,
 	}
 	return h.Repo.Add(&cmd)
+}
+
+func (h *Handler) AddRegisterRecord(d *domain.RegisterRecord) error {
+	return h.Register.Add(d)
 }

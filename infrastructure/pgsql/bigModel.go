@@ -29,7 +29,7 @@ func (m bigModel) Add(
 	}
 
 	if err = withContext(f); err != nil {
-		return err
+		return
 	}
 
 	return

@@ -48,8 +48,13 @@ func NewHandler(cfg *config.SrvConfig, log *logrus.Entry) *Handler {
 		pgsql.NewUserWithRepoMapper(pgsql.UserWithRepo{}),
 	)
 
+	registerRecord := repositories.NewRegisterRecordRepository(
+		pgsql.NewRegisterRecordMapper(pgsql.RegisterRecord{}),
+	)
+
 	bs := app.NewBigModelRecordMessageService(bigModelRecord)
 	rs := app.NewRepoRecordMessageService(repoRecord)
+	rr := app.NewRegisterRecordMessageService(registerRecord)
 
 	return &Handler{
 		Log:      log,
@@ -57,6 +62,7 @@ func NewHandler(cfg *config.SrvConfig, log *logrus.Entry) *Handler {
 
 		BigModel: bs,
 		Repo:     rs,
+		Register: rr,
 	}
 }
 

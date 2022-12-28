@@ -56,3 +56,24 @@ func (s repoRecordMessageService) Add(cmd *RepoRecordAddCmd) (err error) {
 
 	return s.ur.Add(uwr)
 }
+
+// Register
+type RegisterRecordMessageService interface {
+	Add(*domain.RegisterRecord) error
+}
+
+type registerRecordMessageService struct {
+	rr repository.RegisterRecord
+}
+
+func NewRegisterRecordMessageService(
+	rr repository.RegisterRecord,
+) RegisterRecordMessageService {
+	return registerRecordMessageService{
+		rr: rr,
+	}
+}
+
+func (s registerRecordMessageService) Add(d *domain.RegisterRecord) (err error) {
+	return s.rr.Add(d)
+}

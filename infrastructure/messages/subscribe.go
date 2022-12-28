@@ -61,7 +61,7 @@ func do(handler interface{}, msg *mq.Message) (err error) {
 		if !ok {
 			return
 		}
-		
+
 		bmr := domain.UserWithBigModel{}
 		if bmr.BigModel, err = domain.NewBigModel(body.Info["bigmodel"]); err != nil {
 			return
@@ -77,12 +77,26 @@ func do(handler interface{}, msg *mq.Message) (err error) {
 			return
 		}
 
-		uwr := domain.UserWithRepo{}
-		uwr.UserName = body.UserName
-		uwr.RepoName = body.Info["repo_name"]
-		uwr.CreateAt = body.CreateAt
+		uwr := domain.UserWithRepo{
+			UserName: body.UserName,
+			RepoName: body.Info["repo_name"],
+			CreateAt: body.CreateAt,
+		}
 
 		return h.AddRepoRecord(&uwr)
+
+	case "statistics-register":
+		h, ok := handler.(message.RegisterRecordHandler)
+		if !ok {
+			return
+		}
+
+		d := domain.RegisterRecord{
+			UserName: body.UserName,
+			CreateAt: body.CreateAt,
+		}
+
+		return h.AddRegisterRecord(&d)
 	}
 	return
 }
