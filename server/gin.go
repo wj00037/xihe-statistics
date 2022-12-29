@@ -56,6 +56,10 @@ func setRouter(engine *gin.Engine) {
 		pgsql.NewUserWithRepoMapper(pgsql.UserWithRepo{}),
 	)
 
+	registerRecord := repositories.NewRegisterRecordRepository(
+		pgsql.NewRegisterRecordMapper(pgsql.RegisterRecord{}),
+	)
+
 	// controller -> gin
 	v1 := engine.Group(docs.SwaggerInfo.BasePath)
 	{
@@ -70,6 +74,10 @@ func setRouter(engine *gin.Engine) {
 
 		controller.AddRouterForD1Controller(
 			v1, bigModelRecord, repoRecord,
+		)
+
+		controller.AddRouterForRegisterRecordController(
+			v1, registerRecord,
 		)
 	}
 

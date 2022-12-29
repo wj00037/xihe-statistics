@@ -42,3 +42,12 @@ func (cli *client) distinct(
 		Find(&result)
 	return res.Error
 }
+
+func (cli *client) count(
+	ctx context.Context, table interface{},
+	counts *int64,
+) error {
+	return cli.db.WithContext(ctx).
+		Model(table).
+		Count(counts).Error
+}

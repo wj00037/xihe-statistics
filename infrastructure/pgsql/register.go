@@ -2,6 +2,7 @@ package pgsql
 
 import (
 	"context"
+
 	"project/xihe-statistics/infrastructure/repositories"
 )
 
@@ -25,6 +26,22 @@ func (m registerRecord) Add(
 		return cli.create(
 			ctx, m.table,
 			col,
+		)
+	}
+
+	if err = withContext(f); err != nil {
+		return
+	}
+
+	return
+}
+
+func (m registerRecord) Counts() (
+	count int64, err error,
+) {
+	f := func(ctx context.Context) error {
+		return cli.count(
+			ctx, m.table, &count,
 		)
 	}
 

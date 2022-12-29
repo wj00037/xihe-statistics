@@ -7,6 +7,7 @@ import (
 
 type RegisterRecordMapper interface {
 	Add(RegisterRecordDO) error
+	Counts() (int64, error)
 }
 
 type RegisterRecordDO struct {
@@ -24,6 +25,17 @@ func NewRegisterRecordRepository(mapper RegisterRecordMapper) repository.Registe
 
 func (impl registerRecord) Add(d *domain.RegisterRecord) (err error) {
 	return impl.mapper.Add(impl.toRegisterRecordDO(d))
+}
+
+func (impl registerRecord) Get() (do repository.RegisterCounts, err error) {
+	counts, err := impl.mapper.Counts()
+	if err != nil {
+		return
+	}
+	do = repository.RegisterCounts{
+		Counts: counts,
+	}
+	return
 }
 
 func (impl registerRecord) toRegisterRecordDO(d *domain.RegisterRecord) RegisterRecordDO {
