@@ -118,6 +118,7 @@ func (b bigModelRecordService) GetBigModelRecordAll() (dto BigModelAllDTO, err e
 		Users:           usersAll,
 		DupliacteCounts: duplicate_counts,
 		Counts:          len(usersAll),
+		UpdateAt:        time.Now().Format("2006-01-02 15:04:05+08:00"),
 	}
 
 	return
@@ -164,4 +165,5 @@ type BigModelAllDTO struct {
 	Users           []string `json:"user_list"`
 	DupliacteCounts int      `json:"duplicate_counts"`
 	Counts          int      `json:"counts"`
+	UpdateAt        string   `json:"update_at"`
 }
