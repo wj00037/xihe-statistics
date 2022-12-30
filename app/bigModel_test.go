@@ -1,10 +1,11 @@
 package app
 
 import (
-	"project/xihe-statistics/domain"
-	"project/xihe-statistics/domain/repository"
 	"reflect"
 	"testing"
+
+	"project/xihe-statistics/domain"
+	"project/xihe-statistics/domain/repository"
 )
 
 func TestRemoveRepeatedElement(t *testing.T) {
