@@ -1,8 +1,6 @@
 package app
 
 import (
-	"time"
-
 	"project/xihe-statistics/domain/repository"
 )
 
@@ -28,7 +26,7 @@ func (s registerRecordService) Get() (
 	rc, err := s.rr.Get()
 	dto = RegisterRecordDTO{
 		Counts:   rc.Counts,
-		UpdateAt: time.Now().Format("2006-01-02 15:04:05+08:00"),
+		UpdateAt: getLocalTime(),
 	}
 
 	return

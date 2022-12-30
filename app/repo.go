@@ -1,8 +1,6 @@
 package app
 
 import (
-	"time"
-
 	"project/xihe-statistics/domain"
 	"project/xihe-statistics/domain/repository"
 )
@@ -44,7 +42,7 @@ func (s repoRecordService) Get() (dto RepoRecordDTO, err error) {
 	dto = RepoRecordDTO{
 		Users:    rr.Users,
 		Counts:   rr.Counts,
-		UpdateAt: time.Now().Format("2006-01-02 15:04:05+08:00"),
+		UpdateAt: getLocalTime(),
 	}
 	return
 }
@@ -52,7 +50,7 @@ func (s repoRecordService) Get() (dto RepoRecordDTO, err error) {
 func (cmd RepoRecordAddCmd) toRepo(ur *domain.UserWithRepo) {
 	var createAt int64
 	if createAt = cmd.CreateAt; cmd.CreateAt == 0 {
-		createAt = time.Now().Unix()
+		createAt = getUnixLocalTime()
 	}
 
 	*ur = domain.UserWithRepo{

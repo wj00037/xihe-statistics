@@ -1,8 +1,6 @@
 package app
 
 import (
-	"time"
-
 	"project/xihe-statistics/domain/repository"
 )
 
@@ -51,7 +49,7 @@ func (s d1Service) Get() (dto D1DTO, err error) {
 		DuplicateCounts: duplicateCounts,
 		Counts:          len(users),
 		Users:           users,
-		UpdateAt:        time.Now().Format("2006-01-02 15:04:05+08:00"),
+		UpdateAt:        getLocalTime(),
 	}
 	return
 }
