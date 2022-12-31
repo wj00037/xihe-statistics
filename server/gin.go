@@ -60,6 +60,10 @@ func setRouter(engine *gin.Engine) {
 		pgsql.NewRegisterRecordMapper(pgsql.RegisterRecord{}),
 	)
 
+	fileUploadRecord := repositories.NewFileUploadRecordRepository(
+		pgsql.NewFileUploadRecordMapper(pgsql.FileUploadRecord{}),
+	)
+
 	// controller -> gin
 	v1 := engine.Group(docs.SwaggerInfo.BasePath)
 	{
@@ -78,6 +82,10 @@ func setRouter(engine *gin.Engine) {
 
 		controller.AddRouterForRegisterRecordController(
 			v1, registerRecord,
+		)
+
+		controller.AddRouterForFileUploadRecordController(
+			v1, fileUploadRecord,
 		)
 	}
 

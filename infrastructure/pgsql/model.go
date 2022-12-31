@@ -31,3 +31,14 @@ type RegisterRecord struct {
 func (RegisterRecord) TableName() string {
 	return "register_record"
 }
+
+// FileUpload
+type FileUploadRecord struct {
+	UserName   string `gorm:"column:username"`
+	UploadPath string `gorm:"column:upload_path"`
+	CreateAt   string `gorm:"column:create_at"`
+}
+
+func (FileUploadRecord) TableName() string {
+	return "fileupload_record"
+}
