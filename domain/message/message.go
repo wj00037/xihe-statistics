@@ -13,3 +13,7 @@ type RepoRecordHandler interface {
 type RegisterRecordHandler interface {
 	AddRegisterRecord(*domain.RegisterRecord) error
 }
+
+type FileUploadRecordHandler interface {
+	AddUploadFileRecord(*domain.FileUploadRecord) error
+}

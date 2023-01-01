@@ -1,9 +1,13 @@
 package repositories
 
-import "project/xihe-statistics/domain/repository"
+import (
+	"project/xihe-statistics/domain"
+	"project/xihe-statistics/domain/repository"
+)
 
 type FileUploadRecordMapper interface {
 	GetUsers() (FileUploadUserCountsDO, error)
+	AddRecord(FileUploadRecordDO) error
 }
 
 func NewFileUploadRecordRepository(mapper FileUploadRecordMapper) repository.FileUploadRecord {
@@ -12,10 +16,6 @@ func NewFileUploadRecordRepository(mapper FileUploadRecordMapper) repository.Fil
 
 type fileUploadRecord struct {
 	mapper FileUploadRecordMapper
-}
-
-type FileUploadUserCountsDO struct {
-	Users []string
 }
 
 func (impl fileUploadRecord) Get() (f repository.FileUploadUsers, err error) {
@@ -29,4 +29,28 @@ func (impl fileUploadRecord) Get() (f repository.FileUploadUsers, err error) {
 	}
 
 	return
+}
+
+func (impl fileUploadRecord) Add(d *domain.FileUploadRecord) (err error) {
+	return impl.mapper.AddRecord(impl.toFileUploadRecordDO(d))
+}
+
+func (impl fileUploadRecord) toFileUploadRecordDO(
+	d *domain.FileUploadRecord,
+) FileUploadRecordDO {
+	return FileUploadRecordDO{
+		UserName:   d.UserName,
+		UploadPath: d.UploadPath,
+		CreateAt:   d.CreateAt,
+	}
+}
+
+type FileUploadUserCountsDO struct {
+	Users []string
+}
+
+type FileUploadRecordDO struct {
+	UserName   string
+	UploadPath string
+	CreateAt   int64
 }

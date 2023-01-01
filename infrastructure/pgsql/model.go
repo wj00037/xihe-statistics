@@ -36,7 +36,7 @@ func (RegisterRecord) TableName() string {
 type FileUploadRecord struct {
 	UserName   string `gorm:"column:username"`
 	UploadPath string `gorm:"column:upload_path"`
-	CreateAt   string `gorm:"column:create_at"`
+	CreateAt   int64  `gorm:"column:create_at"`
 }
 
 func (FileUploadRecord) TableName() string {

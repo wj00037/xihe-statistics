@@ -1,9 +1,13 @@
 package app
 
-import "project/xihe-statistics/domain/repository"
+import (
+	"project/xihe-statistics/domain"
+	"project/xihe-statistics/domain/repository"
+)
 
 type FileUploadRecordService interface {
 	GetUsersCounts() (FileUploadRecordDTO, error)
+	AddRecord(FileUploadRecordAddCmd) error
 }
 
 func NewFileUploadRecordService(
@@ -33,8 +37,40 @@ func (s fileUploadRecordService) GetUsersCounts() (
 	return
 }
 
+func (s fileUploadRecordService) AddRecord(
+	cmd FileUploadRecordAddCmd,
+) (err error) {
+	d := new(domain.FileUploadRecord)
+
+	cmd.toFileUploadRecord(d)
+	err = s.fr.Add(d)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (cmd FileUploadRecordAddCmd) toFileUploadRecord(
+	d *domain.FileUploadRecord,
+) {
+	var createAt int64
+	if createAt = cmd.CreateAt; cmd.CreateAt == 0 {
+		createAt = getUnixLocalTime()
+	}
+	*d = domain.FileUploadRecord{
+		UserName:   cmd.UserName,
+		UploadPath: cmd.UploadPath,
+		CreateAt:   createAt,
+	}
+}
+
 type FileUploadRecordDTO struct {
 	Users    []string `json:"users"`
 	Counts   int64    `json:"counts"`
 	UpdateAt string   `json:"update_at"`
+}
+
+type FileUploadRecordAddCmd struct {
+	domain.FileUploadRecord
 }

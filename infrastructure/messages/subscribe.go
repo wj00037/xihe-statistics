@@ -97,7 +97,22 @@ func do(handler interface{}, msg *mq.Message) (err error) {
 		}
 
 		return h.AddRegisterRecord(&d)
+
+	case "statistics-fileUpload":
+		h, ok := handler.(message.FileUploadRecordHandler)
+		if !ok {
+			return
+		}
+
+		fr := domain.FileUploadRecord{
+			UserName:   body.UserName,
+			UploadPath: body.Info["upload_path"],
+			CreateAt:   body.CreateAt,
+		}
+
+		return h.AddUploadFileRecord(&fr)
 	}
+
 	return
 }
 

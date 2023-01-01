@@ -13,9 +13,10 @@ type Handler struct {
 	MaxRetry         int
 	TrainingEndpoint string
 
-	BigModel app.BigModelRecordMessageService
-	Repo     app.RepoRecordMessageService
-	Register app.RegisterRecordMessageService
+	BigModel   app.BigModelRecordMessageService
+	Repo       app.RepoRecordMessageService
+	Register   app.RegisterRecordMessageService
+	FileUpload app.FileUploadRecordService
 }
 
 func (h *Handler) AddBigModelRecord(d *domain.UserWithBigModel) error { // implement domain function with app function
@@ -34,4 +35,11 @@ func (h *Handler) AddRepoRecord(d *domain.UserWithRepo) error {
 
 func (h *Handler) AddRegisterRecord(d *domain.RegisterRecord) error {
 	return h.Register.Add(d)
+}
+
+func (h *Handler) AddUploadFileRecord(d *domain.FileUploadRecord) error {
+	cmd := app.FileUploadRecordAddCmd{
+		FileUploadRecord: *d,
+	}
+	return h.FileUpload.AddRecord(cmd)
 }
