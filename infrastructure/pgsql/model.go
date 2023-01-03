@@ -42,3 +42,14 @@ type FileUploadRecord struct {
 func (FileUploadRecord) TableName() string {
 	return "fileupload_record"
 }
+
+// Download
+type DownloadRecord struct {
+	UserName     string `gorm:"column:username"`
+	DownloadPath string `gorm:"column:download_path"`
+	CreateAt     int64  `gorm:"create_at"`
+}
+
+func (DownloadRecord) TableName() string {
+	return "download_record"
+}
