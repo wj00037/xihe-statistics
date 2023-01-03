@@ -9,7 +9,7 @@ FROM alpine:latest
 WORKDIR /opt/app/
 
 # install timezone file
-apk add --no-cache tzdata
+RUN apk add --no-cache tzdata
 
 COPY  --from=BUILDER /go/src/project/xihe-statistics/xihe-statistics /opt/app
 
