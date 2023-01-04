@@ -45,7 +45,7 @@ func (m fileUploadRecord) AddRecord(
 	data, _ := m.toFileUploadCol(do)
 
 	f := func(ctx context.Context) error {
-		return cli.create(
+		return cli.fileUploadUpsert(
 			ctx, m.table,
 			data,
 		)

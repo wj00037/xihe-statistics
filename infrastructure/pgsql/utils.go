@@ -51,3 +51,22 @@ func (cli *client) count(
 		Model(table).
 		Count(counts).Error
 }
+
+func (cli *client) fileUploadUpsert(
+	ctx context.Context, table interface{},
+	data FileUploadRecord,
+) error {
+	var res FileUploadRecord
+
+	result := cli.db.WithContext(ctx).
+		Model(table).
+		Where("username = ?", data.UserName).First(&res)
+
+	if result.RowsAffected == 0 {
+		return cli.db.WithContext(ctx).
+			Model(table).
+			Create(data).Error
+	}
+
+	return result.Updates(data).Error
+}

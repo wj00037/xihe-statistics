@@ -52,17 +52,23 @@ func NewHandler(cfg *config.SrvConfig, log *logrus.Entry) *Handler {
 		pgsql.NewRegisterRecordMapper(pgsql.RegisterRecord{}),
 	)
 
+	fileUploadRecord := repositories.NewFileUploadRecordRepository(
+		pgsql.NewFileUploadRecordMapper(pgsql.FileUploadRecord{}),
+	)
+
 	bs := app.NewBigModelRecordMessageService(bigModelRecord)
 	rs := app.NewRepoRecordMessageService(repoRecord)
 	rr := app.NewRegisterRecordMessageService(registerRecord)
+	fr := app.NewFileUploadRecordService(fileUploadRecord)
 
 	return &Handler{
 		Log:      log,
 		MaxRetry: config.Conf.MQ.MaxRetry,
 
-		BigModel: bs,
-		Repo:     rs,
-		Register: rr,
+		BigModel:   bs,
+		Repo:       rs,
+		Register:   rr,
+		FileUpload: fr,
 	}
 }
 
