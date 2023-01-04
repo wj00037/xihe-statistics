@@ -53,3 +53,14 @@ type DownloadRecord struct {
 func (DownloadRecord) TableName() string {
 	return "download_record"
 }
+
+// Train
+type TrainRecord struct {
+	UserName string `gorm:"column:username"`
+	TrainId  string `gorm:"column:train_id"`
+	CreateAt int64  `gorm:"column:create_at"`
+}
+
+func (TrainRecord) TableName() string {
+	return "train_record"
+}
