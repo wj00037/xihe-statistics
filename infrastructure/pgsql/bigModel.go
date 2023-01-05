@@ -58,6 +58,24 @@ func (m bigModel) Get(t string) (cols []repositories.BigModelDO, err error) {
 	return
 }
 
+func (m bigModel) GetByTypeAndTime(bigModel string, time int64) (counts int64, err error) {
+
+	f := func(ctx context.Context) error {
+		return cli.whereDistinctCount(
+			ctx, m.table,
+			"bigmodel = ? AND create_at <= ?",
+			bigModel, time,
+			"username", &counts,
+		)
+	}
+
+	if err = withContext(f); err != nil {
+		return
+	}
+
+	return
+}
+
 func (m bigModel) GetAll() (cols []repositories.BigModelDO, err error) {
 	var records []BigModelRecord
 

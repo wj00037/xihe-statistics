@@ -25,13 +25,10 @@ func (cmd *UserWithBigModelAddCmd) Validate() error {
 	return nil
 }
 
-type UserWithBigModelAddCmd struct {
-	domain.UserWithBigModel
-}
-
 type BigModelRecordService interface {
 	AddUserWithBigModel(*UserWithBigModelAddCmd) error
 	GetBigModelRecordsByType(domain.BigModel) (BigModelDTO, error)
+	GetCountsByTypeAndTimeDiff(BigModelCountIncreaseCmd) (BigModelCountIncreaseDTO, error)
 	GetBigModelRecordAll() (BigModelAllDTO, error)
 }
 
@@ -78,6 +75,41 @@ func (b bigModelRecordService) GetBigModelRecordsByType(d domain.BigModel) (dto 
 	}
 
 	return
+}
+
+func (s bigModelRecordService) GetCountsByTypeAndTimeDiff(
+	cmd BigModelCountIncreaseCmd,
+) (
+	dto BigModelCountIncreaseDTO,
+	err error,
+) {
+	bigModel := cmd.BigModel
+	startTime, err := toUnixTime(cmd.StartTime)
+	if err != nil {
+		return
+	}
+	endTime, err := toUnixTime(cmd.EndTime)
+	if err != nil {
+		return
+	}
+
+	startCount, err := s.ub.GetByTypeAndTime(bigModel, startTime)
+	if err != nil {
+		return
+	}
+
+	endCount, err := s.ub.GetByTypeAndTime(bigModel, endTime)
+	if err != nil {
+		return
+	}
+
+	dto = BigModelCountIncreaseDTO{
+		BigModel: bigModel.BigModel(),
+		Counts:   endCount - startCount,
+	}
+
+	return
+
 }
 
 func (b bigModelRecordService) GetBigModelRecordAll() (dto BigModelAllDTO, err error) {
@@ -165,4 +197,19 @@ type BigModelAllDTO struct {
 	DupliacteCounts int      `json:"duplicate_counts"`
 	Counts          int      `json:"counts"`
 	UpdateAt        string   `json:"update_at"`
+}
+
+type BigModelCountIncreaseDTO struct {
+	BigModel string `json:"bigmodel"`
+	Counts   int64  `json:"counts"`
+}
+
+type UserWithBigModelAddCmd struct {
+	domain.UserWithBigModel
+}
+
+type BigModelCountIncreaseCmd struct {
+	BigModel  domain.BigModel `json:"bigmodel"`
+	StartTime string          `json:"start_time"`
+	EndTime   string          `json:"end_time"`
 }

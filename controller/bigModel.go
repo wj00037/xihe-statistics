@@ -19,6 +19,7 @@ func AddRouterForBigModelRecordController(
 
 	rg.POST("/v1/d1/bigmodel", ctl.AddBigModel)
 	rg.GET("/v1/d1/bigmodel/:bigmodel", ctl.Get)
+	rg.POST("/v1/d1/bigmodel/increase", ctl.GetIncrease)
 	rg.GET("/v1/d1/bigmodel", ctl.GetAll)
 
 }
@@ -31,13 +32,13 @@ type BigModelRecordController struct {
 // @Summary Add
 // @Description add user query bigmodel record
 // @Tags  D1
-// @Param  body  body  QueryBigModelRequest  true  "body of bigmodel records"
+// @Param  body  body  BigModelCreateRequest  true  "body of bigmodel records"
 // @Accept json
 // @Success 200 {object}
 // @Produce json
 // @Router /v1/d1/bigmodel [post]
 func (ctl *BigModelRecordController) AddBigModel(ctx *gin.Context) {
-	req := QueryBigModelRequest{}
+	req := BigModelCreateRequest{}
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, respBadRequestBody)
 		return
@@ -86,6 +87,39 @@ func (ctl *BigModelRecordController) Get(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, newResponseData(bmd))
+}
+
+// @Summary GetIncrease
+// @Description get increase d1 user count during time
+// @Tags  D1
+// @Param  body  body  BigModelQueryWithTypeAndTimeRequest  true  "body of time and bigmodel type"
+// @Accept json
+// @Success 200 {object}
+// @Produce json
+// @Router /v1/d1/bigmodel/increase [post]
+func (ctl *BigModelRecordController) GetIncrease(ctx *gin.Context) {
+	req := BigModelQueryWithTypeAndTimeRequest{}
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, respBadRequestBody)
+		return
+	}
+
+	cmd, err := req.toCmd()
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, newResponseCodeError(
+			errorBadRequestParam, err,
+		))
+		return
+	}
+
+	dto, err := ctl.bs.GetCountsByTypeAndTimeDiff(cmd)
+	if err != nil {
+		ctl.sendRespWithInternalError(ctx, newResponseError(err))
+
+		return
+	}
+
+	ctx.JSON(http.StatusOK, newResponseData(dto))
 }
 
 // @Summary GetAll

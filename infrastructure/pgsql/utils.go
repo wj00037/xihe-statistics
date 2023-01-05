@@ -70,3 +70,16 @@ func (cli *client) fileUploadUpsert(
 
 	return result.Updates(data).Error
 }
+
+// filter data with where command (two condtion) and count distinct data return quantity
+func (cli *client) whereDistinctCount(
+	ctx context.Context, table interface{},
+	condition string, v1 interface{}, v2 interface{},
+	d string, counts *int64,
+) error {
+	return cli.db.WithContext(ctx).
+		Model(table).
+		Where(condition, v1, v2).
+		Distinct(d).
+		Count(counts).Error
+}

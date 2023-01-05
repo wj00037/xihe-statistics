@@ -5,18 +5,38 @@ import (
 	"project/xihe-statistics/domain"
 )
 
-type QueryBigModelRequest struct {
+type BigModelCreateRequest struct {
 	UserName string `json:"username"`
 	BigModel string `json:"bigmodel"`
 }
 
-func (req *QueryBigModelRequest) toCmd() (cmd app.UserWithBigModelAddCmd, err error) {
+func (req *BigModelCreateRequest) toCmd() (cmd app.UserWithBigModelAddCmd, err error) {
 
 	if cmd.BigModel, err = domain.NewBigModel(req.BigModel); err != nil {
 		return
 	}
 
 	cmd.UserName = req.UserName
+
+	return
+}
+
+type BigModelQueryWithTypeAndTimeRequest struct {
+	BigModel  string `json:"bigmodel"`
+	StartTime string `json:"start_time"`
+	EndTime   string `json:"end_time"`
+}
+
+func (req BigModelQueryWithTypeAndTimeRequest) toCmd() (
+	cmd app.BigModelCountIncreaseCmd,
+	err error,
+) {
+	if cmd.BigModel, err = domain.NewBigModel(req.BigModel); err != nil {
+		return
+	}
+
+	cmd.StartTime = req.StartTime
+	cmd.EndTime = req.EndTime
 
 	return
 }

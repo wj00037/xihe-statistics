@@ -8,6 +8,7 @@ import (
 type BigModelMapper interface {
 	Add(BigModelDO) error
 	Get(string) ([]BigModelDO, error)
+	GetByTypeAndTime(string, int64) (int64, error)
 	GetAll() ([]BigModelDO, error)
 }
 
@@ -41,6 +42,10 @@ func (impl bigmodel) Get(d domain.BigModel) (ds []domain.UserWithBigModel, err e
 	}
 
 	return
+}
+
+func (impl bigmodel) GetByTypeAndTime(d domain.BigModel, time int64) (int64, error) {
+	return impl.mapper.GetByTypeAndTime(d.BigModel(), time)
 }
 
 func (impl bigmodel) GetAll() (ds []domain.UserWithBigModel, err error) {
