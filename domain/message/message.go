@@ -17,3 +17,7 @@ type RegisterRecordHandler interface {
 type FileUploadRecordHandler interface {
 	AddUploadFileRecord(*domain.FileUploadRecord) error
 }
+
+type DownloadRecordHandler interface {
+	AddDownloadRecord(*domain.DownloadRecord) error
+}

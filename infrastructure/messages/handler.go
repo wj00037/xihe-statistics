@@ -17,6 +17,7 @@ type Handler struct {
 	Repo       app.RepoRecordMessageService
 	Register   app.RegisterRecordMessageService
 	FileUpload app.FileUploadRecordService
+	Download   app.DownloadRecordMessageService
 }
 
 func (h *Handler) AddBigModelRecord(d *domain.UserWithBigModel) error { // implement domain function with app function
@@ -42,4 +43,8 @@ func (h *Handler) AddUploadFileRecord(d *domain.FileUploadRecord) error {
 		FileUploadRecord: *d,
 	}
 	return h.FileUpload.AddRecord(cmd)
+}
+
+func (h *Handler) AddDownloadRecord(d *domain.DownloadRecord) error {
+	return h.Download.Add(d)
 }

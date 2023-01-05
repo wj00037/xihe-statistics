@@ -77,3 +77,24 @@ func NewRegisterRecordMessageService(
 func (s registerRecordMessageService) Add(d *domain.RegisterRecord) (err error) {
 	return s.rr.Add(d)
 }
+
+// Download
+type DownloadRecordMessageService interface {
+	Add(*domain.DownloadRecord) error
+}
+
+func NewDownloadRecordMessgaeService(
+	dr repository.DownloadRecord,
+) DownloadRecordMessageService {
+	return downloadRecordMessageService{
+		dr: dr,
+	}
+}
+
+type downloadRecordMessageService struct {
+	dr repository.DownloadRecord
+}
+
+func (s downloadRecordMessageService) Add(d *domain.DownloadRecord) (err error) {
+	return s.dr.Add(d)
+}

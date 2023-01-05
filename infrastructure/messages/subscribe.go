@@ -111,6 +111,21 @@ func do(handler interface{}, msg *mq.Message) (err error) {
 		}
 
 		return h.AddUploadFileRecord(&fr)
+
+	case "statistics-download":
+		h, ok := handler.(message.DownloadRecordHandler)
+		if !ok {
+			return
+		}
+
+		dr := domain.DownloadRecord{
+			UserName:     body.UserName,
+			DownloadPath: body.Info["download_path"],
+			CreateAt:     body.CreateAt,
+		}
+
+		return h.AddDownloadRecord(&dr)
+
 	}
 
 	return

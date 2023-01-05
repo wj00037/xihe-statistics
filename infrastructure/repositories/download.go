@@ -1,8 +1,12 @@
 package repositories
 
-import "project/xihe-statistics/domain/repository"
+import (
+	"project/xihe-statistics/domain"
+	"project/xihe-statistics/domain/repository"
+)
 
 type DownloadRecordMapper interface {
+	AddDownloadRecord(DownloadRecordDO) error
 	GetDownloadCount() (int64, error)
 }
 
@@ -16,4 +20,28 @@ type downloadRecord struct {
 
 func (impl downloadRecord) Get() (count int64, err error) {
 	return impl.mapper.GetDownloadCount()
+}
+
+func (impl downloadRecord) Add(dr *domain.DownloadRecord) (err error) {
+	do, _ := impl.toDownloadRecordDO(dr)
+	return impl.mapper.AddDownloadRecord(do)
+}
+
+type DownloadRecordDO struct {
+	UserName     string
+	DownloadPath string
+	CreateAt     int64
+}
+
+func (impl downloadRecord) toDownloadRecordDO(dr *domain.DownloadRecord) (
+	do DownloadRecordDO,
+	err error,
+) {
+	do = DownloadRecordDO{
+		UserName:     dr.UserName,
+		DownloadPath: dr.DownloadPath,
+		CreateAt:     dr.CreateAt,
+	}
+
+	return
 }

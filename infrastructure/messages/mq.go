@@ -56,10 +56,15 @@ func NewHandler(cfg *config.SrvConfig, log *logrus.Entry) *Handler {
 		pgsql.NewFileUploadRecordMapper(pgsql.FileUploadRecord{}),
 	)
 
+	downloadRecord := repositories.NewDownloadRecordRepository(
+		pgsql.NewDownloadRecordMapper(pgsql.DownloadRecord{}),
+	)
+
 	bs := app.NewBigModelRecordMessageService(bigModelRecord)
 	rs := app.NewRepoRecordMessageService(repoRecord)
 	rr := app.NewRegisterRecordMessageService(registerRecord)
 	fr := app.NewFileUploadRecordService(fileUploadRecord)
+	ds := app.NewDownloadRecordMessgaeService(downloadRecord)
 
 	return &Handler{
 		Log:      log,
@@ -69,6 +74,7 @@ func NewHandler(cfg *config.SrvConfig, log *logrus.Entry) *Handler {
 		Repo:       rs,
 		Register:   rr,
 		FileUpload: fr,
+		Download:   ds,
 	}
 }
 
