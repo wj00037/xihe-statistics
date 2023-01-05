@@ -155,13 +155,13 @@ func RemoveRepeatedElement(arr []string) (newArr []string) {
 
 type BigModelDTO struct {
 	BigModel string   `json:"bigmodel"`
-	Users    []string `json:"user_list"`
+	Users    []string `json:"users"`
 	Counts   int      `json:"counts"`
 	UpdateAt string   `json:"update_at"`
 }
 
 type BigModelAllDTO struct {
-	Users           []string `json:"user_list"`
+	Users           []string `json:"users"`
 	DupliacteCounts int      `json:"duplicate_counts"`
 	Counts          int      `json:"counts"`
 	UpdateAt        string   `json:"update_at"`
