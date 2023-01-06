@@ -2,6 +2,7 @@ package messages
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/signal"
 	"sync"
@@ -19,6 +20,8 @@ import (
 
 func Init(cfg mq.MQConfig, log *logrus.Entry, topic config.Topics) error {
 	topics = topic
+
+	fmt.Printf("topic: %v\n", topic)
 
 	err := kafka.Init(
 		mq.Addresses(cfg.Addresses...),

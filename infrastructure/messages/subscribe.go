@@ -3,6 +3,7 @@ package messages
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"github.com/opensourceways/community-robot-lib/kafka"
 	"github.com/opensourceways/community-robot-lib/mq"
@@ -54,6 +55,8 @@ func do(handler interface{}, msg *mq.Message) (err error) {
 	if err = json.Unmarshal(msg.Body, &body); err != nil {
 		return
 	}
+
+	fmt.Printf("body: %v\n", body)
 
 	switch body.Type {
 	case "bigmodel":
