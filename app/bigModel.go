@@ -115,9 +115,8 @@ func (s bigModelRecordService) GetCountsByTypeAndTimeDiff(
 func (b bigModelRecordService) GetBigModelRecordAll() (dto BigModelAllDTO, err error) {
 	var (
 		bigmodel domain.BigModel
-		// bm       []domain.UserWithBigModel
-		duplicate_counts = 0
-		usersAll         []string
+		counts   = 0
+		usersAll []string
 	)
 
 	for _, bigmodelType := range domain.GetBigModelTypeList() {
@@ -132,24 +131,23 @@ func (b bigModelRecordService) GetBigModelRecordAll() (dto BigModelAllDTO, err e
 			return dto, err
 		}
 
-		// deduplicate single bigmodel type user list
 		users := make([]string, len(bm))
 		for j := range bm {
 			users[j] = bm[j].UserName
 		}
 		users = RemoveRepeatedElement(users) // TODO: maybe there is way to optimize
 
-		duplicate_counts += len(users)
+		counts += len(users)
 		usersAll = append(usersAll, users...)
 	}
 
 	usersAll = RemoveRepeatedElement(usersAll)
 
 	dto = BigModelAllDTO{
-		Users:           usersAll,
-		DupliacteCounts: duplicate_counts,
-		Counts:          len(usersAll),
-		UpdateAt:        getLocalTime(),
+		Users:             usersAll,
+		Counts:            counts,
+		DedupliacteCounts: len(usersAll),
+		UpdateAt:          getLocalTime(),
 	}
 
 	return
@@ -193,10 +191,10 @@ type BigModelDTO struct {
 }
 
 type BigModelAllDTO struct {
-	Users           []string `json:"users"`
-	DupliacteCounts int      `json:"duplicate_counts"`
-	Counts          int      `json:"counts"`
-	UpdateAt        string   `json:"update_at"`
+	Users             []string `json:"users"`
+	Counts            int      `json:"counts"`
+	DedupliacteCounts int      `json:"deduplicate_counts"`
+	UpdateAt          string   `json:"update_at"`
 }
 
 type BigModelCountIncreaseDTO struct {
