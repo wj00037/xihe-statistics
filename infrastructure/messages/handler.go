@@ -13,12 +13,12 @@ type Handler struct {
 	MaxRetry         int
 	TrainingEndpoint string
 
-	BigModel   app.BigModelRecordMessageService
-	Repo       app.RepoRecordMessageService
-	Register   app.RegisterRecordMessageService
+	BigModel   app.BigModelRecordService
+	Repo       app.RepoRecordService
+	Register   app.RegisterRecordService
 	FileUpload app.FileUploadRecordService
-	Download   app.DownloadRecordMessageService
-	Train      app.TrainRecordMessageService
+	Download   app.DownloadRecordService
+	Train      app.TrainRecordService
 }
 
 func (h *Handler) AddBigModelRecord(d *domain.UserWithBigModel) error { // implement domain function with app function

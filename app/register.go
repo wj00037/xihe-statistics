@@ -1,10 +1,12 @@
 package app
 
 import (
+	"project/xihe-statistics/domain"
 	"project/xihe-statistics/domain/repository"
 )
 
 type RegisterRecordService interface {
+	Add(*domain.RegisterRecord) error
 	Get() (RegisterRecordDTO, error)
 }
 
@@ -18,6 +20,10 @@ func NewRegisterRecordService(
 
 type registerRecordService struct {
 	rr repository.RegisterRecord
+}
+
+func (s registerRecordService) Add(d *domain.RegisterRecord) (err error) {
+	return s.rr.Add(d)
 }
 
 func (s registerRecordService) Get() (

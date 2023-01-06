@@ -1,10 +1,12 @@
 package app
 
 import (
+	"project/xihe-statistics/domain"
 	"project/xihe-statistics/domain/repository"
 )
 
 type TrainRecordService interface {
+	Add(*domain.TrainRecord) error
 	Get() (TrainRecordDTO, error)
 }
 
@@ -18,6 +20,10 @@ func NewTrainRecordService(
 	return trainRecordService{
 		tr: tr,
 	}
+}
+
+func (s trainRecordService) Add(tr *domain.TrainRecord) (err error) {
+	return s.tr.Add(tr)
 }
 
 func (s trainRecordService) Get() (

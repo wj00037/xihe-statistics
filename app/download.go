@@ -1,10 +1,12 @@
 package app
 
 import (
+	"project/xihe-statistics/domain"
 	"project/xihe-statistics/domain/repository"
 )
 
 type DownloadRecordService interface {
+	Add(*domain.DownloadRecord) error
 	Get() (DownloadRecordDTO, error)
 }
 
@@ -18,6 +20,10 @@ func NewDownloadRecordService(
 	return downloadRecordService{
 		dr: dr,
 	}
+}
+
+func (s downloadRecordService) Add(d *domain.DownloadRecord) (err error) {
+	return s.dr.Add(d)
 }
 
 func (s downloadRecordService) Get() (dto DownloadRecordDTO, err error) {

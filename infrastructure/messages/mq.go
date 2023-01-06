@@ -64,12 +64,12 @@ func NewHandler(cfg *config.SrvConfig, log *logrus.Entry) *Handler {
 		pgsql.NewTrainRecordMapper(pgsql.TrainRecord{}),
 	)
 
-	bs := app.NewBigModelRecordMessageService(bigModelRecord)
-	rs := app.NewRepoRecordMessageService(repoRecord)
-	rr := app.NewRegisterRecordMessageService(registerRecord)
+	bs := app.NewBigModelRecordService(bigModelRecord)
+	rs := app.NewRepoRecordService(repoRecord)
+	rr := app.NewRegisterRecordService(registerRecord)
 	fr := app.NewFileUploadRecordService(fileUploadRecord)
-	ds := app.NewDownloadRecordMessgaeService(downloadRecord)
-	ts := app.NewtrainRecordMessageService(trainRecord)
+	ds := app.NewDownloadRecordService(downloadRecord)
+	ts := app.NewTrainRecordService(trainRecord)
 
 	return &Handler{
 		Log:      log,
