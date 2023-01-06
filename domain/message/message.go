@@ -21,3 +21,7 @@ type FileUploadRecordHandler interface {
 type DownloadRecordHandler interface {
 	AddDownloadRecord(*domain.DownloadRecord) error
 }
+
+type TrainRecordHandler interface {
+	AddTrainRecord(*domain.TrainRecord) error
+}

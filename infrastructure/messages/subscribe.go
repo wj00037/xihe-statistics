@@ -126,6 +126,21 @@ func do(handler interface{}, msg *mq.Message) (err error) {
 
 		return h.AddDownloadRecord(&dr)
 
+	case "training":
+		h, ok := handler.(message.TrainRecordHandler)
+		if !ok {
+			return
+		}
+
+		tr := domain.TrainRecord{
+			UserName:  body.User,
+			ProjectId: body.Info["project_id"],
+			TrainId:   body.Info["id"],
+			CreateAt:  body.When,
+		}
+
+		return h.AddTrainRecord(&tr)
+
 	}
 
 	return

@@ -98,3 +98,24 @@ type downloadRecordMessageService struct {
 func (s downloadRecordMessageService) Add(d *domain.DownloadRecord) (err error) {
 	return s.dr.Add(d)
 }
+
+// train
+type TrainRecordMessageService interface {
+	Add(*domain.TrainRecord) error
+}
+
+type trainRecordMessageService struct {
+	tr repository.TrainRecord
+}
+
+func NewtrainRecordMessageService(
+	tr repository.TrainRecord,
+) TrainRecordMessageService {
+	return trainRecordMessageService{
+		tr: tr,
+	}
+}
+
+func (s trainRecordMessageService) Add(tr *domain.TrainRecord) (err error) {
+	return s.tr.Add(tr)
+}

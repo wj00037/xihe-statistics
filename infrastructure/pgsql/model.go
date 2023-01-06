@@ -56,9 +56,10 @@ func (DownloadRecord) TableName() string {
 
 // Train
 type TrainRecord struct {
-	UserName string `gorm:"column:username"`
-	TrainId  string `gorm:"column:train_id"`
-	CreateAt int64  `gorm:"column:create_at"`
+	UserName  string `gorm:"column:username"`
+	ProjectId string `gorm:"column:project_id"`
+	TrainId   string `gorm:"column:train_id"`
+	CreateAt  int64  `gorm:"column:create_at"`
 }
 
 func (TrainRecord) TableName() string {
