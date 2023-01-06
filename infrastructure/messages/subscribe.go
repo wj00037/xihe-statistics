@@ -56,7 +56,7 @@ func do(handler interface{}, msg *mq.Message) (err error) {
 	}
 
 	switch body.Type {
-	case "statistics-bigmodel":
+	case "bigmodel":
 		h, ok := handler.(message.BigModelRecordHandler)
 		if !ok {
 			return
@@ -66,34 +66,34 @@ func do(handler interface{}, msg *mq.Message) (err error) {
 		if bmr.BigModel, err = domain.NewBigModel(body.Info["bigmodel"]); err != nil {
 			return
 		}
-		bmr.UserName = body.UserName
-		bmr.CreateAt = body.CreateAt
+		bmr.UserName = body.User
+		bmr.CreateAt = body.When
 
 		return h.AddBigModelRecord(&bmr)
 
-	case "statistics-repo":
+	case "resource":
 		h, ok := handler.(message.RepoRecordHandler)
 		if !ok {
 			return
 		}
 
 		uwr := domain.UserWithRepo{
-			UserName: body.UserName,
-			RepoName: body.Info["repo_name"],
-			CreateAt: body.CreateAt,
+			UserName: body.User,
+			RepoName: body.Info["name"],
+			CreateAt: body.When,
 		}
 
 		return h.AddRepoRecord(&uwr)
 
-	case "statistics-register":
+	case "user":
 		h, ok := handler.(message.RegisterRecordHandler)
 		if !ok {
 			return
 		}
 
 		d := domain.RegisterRecord{
-			UserName: body.UserName,
-			CreateAt: body.CreateAt,
+			UserName: body.User,
+			CreateAt: body.When,
 		}
 
 		return h.AddRegisterRecord(&d)
@@ -105,9 +105,9 @@ func do(handler interface{}, msg *mq.Message) (err error) {
 		}
 
 		fr := domain.FileUploadRecord{
-			UserName:   body.UserName,
+			UserName:   body.User,
 			UploadPath: body.Info["upload_path"],
-			CreateAt:   body.CreateAt,
+			CreateAt:   body.When,
 		}
 
 		return h.AddUploadFileRecord(&fr)
@@ -119,9 +119,9 @@ func do(handler interface{}, msg *mq.Message) (err error) {
 		}
 
 		dr := domain.DownloadRecord{
-			UserName:     body.UserName,
+			UserName:     body.User,
 			DownloadPath: body.Info["download_path"],
-			CreateAt:     body.CreateAt,
+			CreateAt:     body.When,
 		}
 
 		return h.AddDownloadRecord(&dr)
