@@ -1,12 +1,13 @@
 package app
 
 import (
+	"errors"
 	"project/xihe-statistics/domain"
 	"project/xihe-statistics/domain/repository"
 )
 
 type TrainRecordService interface {
-	Add(*domain.TrainRecord) error
+	Add(*TrainRecordAddCmd) error
 	Get() (TrainRecordDTO, error)
 }
 
@@ -22,7 +23,10 @@ func NewTrainRecordService(
 	}
 }
 
-func (s trainRecordService) Add(tr *domain.TrainRecord) (err error) {
+func (s trainRecordService) Add(cmd *TrainRecordAddCmd) (err error) {
+	tr := new(domain.TrainRecord)
+	cmd.toTrainRecord(tr)
+
 	return s.tr.Add(tr)
 }
 
@@ -42,6 +46,34 @@ func (s trainRecordService) Get() (
 	}
 
 	return
+}
+
+func (cmd TrainRecordAddCmd) toTrainRecord(
+	d *domain.TrainRecord,
+) {
+	*d = domain.TrainRecord{
+		UserName:  cmd.UserName,
+		ProjectId: cmd.ProjectId,
+		TrainId:   cmd.TrainId,
+		CreateAt:  cmd.CreateAt,
+	}
+}
+
+func (cmd TrainRecordAddCmd) Validate() error {
+	b := cmd.UserName == "" ||
+		cmd.ProjectId == "" ||
+		cmd.TrainId == "" ||
+		cmd.CreateAt == 0
+
+	if b {
+		return errors.New("invalid cmd of add train record")
+	}
+
+	return nil
+}
+
+type TrainRecordAddCmd struct {
+	domain.TrainRecord
 }
 
 type TrainRecordDTO struct {

@@ -25,6 +25,11 @@ func (h *Handler) AddBigModelRecord(d *domain.UserWithBigModel) error { // imple
 	cmd := app.UserWithBigModelAddCmd{
 		UserWithBigModel: *d,
 	}
+
+	if err := cmd.Validate(); err != nil {
+		return err
+	}
+
 	return h.BigModel.AddUserWithBigModel(&cmd)
 }
 
@@ -32,24 +37,58 @@ func (h *Handler) AddRepoRecord(d *domain.UserWithRepo) error {
 	cmd := app.RepoRecordAddCmd{
 		UserWithRepo: *d,
 	}
+
+	if err := cmd.Validate(); err != nil {
+		return err
+	}
+
 	return h.Repo.Add(&cmd)
 }
 
 func (h *Handler) AddRegisterRecord(d *domain.RegisterRecord) error {
-	return h.Register.Add(d)
+	cmd := app.RegisterRecordAddCmd{
+		RegisterRecord: *d,
+	}
+
+	if err := cmd.Validate(); err != nil {
+		return err
+	}
+
+	return h.Register.Add(&cmd)
 }
 
 func (h *Handler) AddUploadFileRecord(d *domain.FileUploadRecord) error {
 	cmd := app.FileUploadRecordAddCmd{
 		FileUploadRecord: *d,
 	}
+
+	if err := cmd.Validate(); err != nil {
+		return err
+	}
+
 	return h.FileUpload.AddRecord(cmd)
 }
 
 func (h *Handler) AddDownloadRecord(d *domain.DownloadRecord) error {
-	return h.Download.Add(d)
+	cmd := app.DownloadRecordAddCmd{
+		DownloadRecord: *d,
+	}
+
+	if err := cmd.Validate(); err != nil {
+		return err
+	}
+
+	return h.Download.Add(&cmd)
 }
 
 func (h *Handler) AddTrainRecord(d *domain.TrainRecord) error {
-	return h.Train.Add(d)
+	cmd := app.TrainRecordAddCmd{
+		TrainRecord: *d,
+	}
+
+	if err := cmd.Validate(); err != nil {
+		return err
+	}
+
+	return h.Train.Add(&cmd)
 }

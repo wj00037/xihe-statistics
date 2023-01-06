@@ -1,6 +1,7 @@
 package app
 
 import (
+	"errors"
 	"project/xihe-statistics/domain"
 	"project/xihe-statistics/domain/repository"
 )
@@ -45,6 +46,20 @@ func (s repoRecordService) Get() (dto RepoRecordDTO, err error) {
 		UpdateAt: getLocalTime(),
 	}
 	return
+}
+
+func (cmd RepoRecordAddCmd) Validate() error {
+	repo := cmd.UserWithRepo
+
+	b := repo.UserName == "" ||
+		repo.RepoName == "" ||
+		repo.CreateAt == 0
+
+	if b {
+		return errors.New("invalid cmd of add repo record")
+	}
+
+	return nil
 }
 
 func (cmd RepoRecordAddCmd) toRepo(ur *domain.UserWithRepo) {

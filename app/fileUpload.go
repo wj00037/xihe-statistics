@@ -1,6 +1,7 @@
 package app
 
 import (
+	"errors"
 	"project/xihe-statistics/domain"
 	"project/xihe-statistics/domain/repository"
 )
@@ -43,12 +44,7 @@ func (s fileUploadRecordService) AddRecord(
 	d := new(domain.FileUploadRecord)
 
 	cmd.toFileUploadRecord(d)
-	err = s.fr.Add(d)
-	if err != nil {
-		return
-	}
-
-	return
+	return s.fr.Add(d)
 }
 
 func (cmd FileUploadRecordAddCmd) toFileUploadRecord(
@@ -63,6 +59,19 @@ func (cmd FileUploadRecordAddCmd) toFileUploadRecord(
 		UploadPath: cmd.UploadPath,
 		CreateAt:   createAt,
 	}
+}
+
+func (cmd FileUploadRecordAddCmd) Validate() error {
+	fileUpload := cmd.FileUploadRecord
+
+	b := fileUpload.UserName == "" ||
+		fileUpload.UploadPath == "" ||
+		fileUpload.CreateAt == 0
+	if b {
+		return errors.New("invalid cmd of add file upload record")
+	}
+
+	return nil
 }
 
 type FileUploadRecordDTO struct {
