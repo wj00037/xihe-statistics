@@ -5,8 +5,8 @@ import (
 )
 
 func GetBigModelTypeList() []string {
-	return []string{"taichu-VQA", "taichu-TextToImg",
-		"taichu-ImgToText", "luojiaNet", "pangu-QA",
+	return []string{"vqa", "gen_picture",
+		"desc_picture", "luojia", "pangu",
 		"codegeex"}
 }
 
