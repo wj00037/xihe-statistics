@@ -13,7 +13,7 @@ func getLocalTime() (t string) {
 }
 
 func getUnixLocalTime() (t int64) {
-	return time.Now().In(cstSh).Unix()
+	return time.Now().Unix()
 }
 
 func toTimeStamp(t string) (stamp time.Time, err error) {
