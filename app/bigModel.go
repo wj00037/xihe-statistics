@@ -2,6 +2,7 @@ package app
 
 import (
 	"errors"
+	"fmt"
 
 	"project/xihe-statistics/domain"
 	"project/xihe-statistics/domain/repository"
@@ -155,6 +156,10 @@ func (b bigModelRecordService) GetBigModelRecordAll() (dto BigModelAllDTO, err e
 
 func (cmd *UserWithBigModelAddCmd) toBigModel(r *domain.UserWithBigModel) {
 	var createAt int64
+
+	t := getUnixLocalTime()
+	fmt.Printf("t: %v\n", t)
+
 	if createAt = cmd.CreateAt; cmd.CreateAt == 0 {
 		createAt = getUnixLocalTime()
 	}
