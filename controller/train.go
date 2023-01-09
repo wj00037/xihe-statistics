@@ -18,7 +18,7 @@ func AddRouterForTrainRecordController(
 	}
 
 	rg.GET("/v1/train", ctl.Get)
-	rg.POST("/v1/train/increase", ctl.Get)
+	rg.POST("/v1/train/increase", ctl.GetIncrease)
 
 }
 
