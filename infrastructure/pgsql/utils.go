@@ -83,3 +83,14 @@ func (cli *client) whereDistinctCount(
 		Distinct(d).
 		Count(counts).Error
 }
+
+func (cli *client) whereCount(
+	ctx context.Context, table interface{},
+	condition string, v1 interface{}, v2 interface{},
+	counts *int64,
+) error {
+	return cli.db.WithContext(ctx).
+		Model(table).
+		Where(condition, v1, v2).
+		Count(counts).Error
+}

@@ -7,6 +7,7 @@ import (
 
 type TrainRecordMapper interface {
 	Get() (int64, error)
+	GetTrains(startTime int64, endTime int64) (counts int64, err error)
 	Add(do TrainRecordDO) error
 }
 
@@ -24,6 +25,10 @@ func (impl trainRecord) Get() (counts int64, err error) {
 
 func (impl trainRecord) Add(tr *domain.TrainRecord) error {
 	return impl.mapper.Add(impl.toTrainRecordDO(tr))
+}
+
+func (impl trainRecord) GetTrains(startTime int64, endTime int64) (counts int64, err error) {
+	return impl.mapper.GetTrains(startTime, endTime)
 }
 
 type TrainRecordDO struct {

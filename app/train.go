@@ -2,6 +2,7 @@ package app
 
 import (
 	"errors"
+
 	"project/xihe-statistics/domain"
 	"project/xihe-statistics/domain/repository"
 )
@@ -9,6 +10,7 @@ import (
 type TrainRecordService interface {
 	Add(*TrainRecordAddCmd) error
 	Get() (TrainRecordDTO, error)
+	GetTrains(TrainIncreaseCmd) (dto TrainsDTO, err error)
 }
 
 type trainRecordService struct {
@@ -48,6 +50,34 @@ func (s trainRecordService) Get() (
 	return
 }
 
+func (s trainRecordService) GetTrains(
+	cmd TrainIncreaseCmd,
+) (dto TrainsDTO, err error) {
+	startTime := cmd.StartTime
+	endTime := cmd.EndTime
+
+	tStart, err := toUnixTime(startTime)
+	if err != nil {
+		return
+	}
+
+	tEnd, err := toUnixTime(endTime)
+	if err != nil {
+		return
+	}
+
+	counts, err := s.tr.GetTrains(tStart, tEnd)
+	if err != nil {
+		return
+	}
+
+	dto = TrainsDTO{
+		Counts: counts,
+	}
+
+	return
+}
+
 func (cmd TrainRecordAddCmd) toTrainRecord(
 	d *domain.TrainRecord,
 ) {
@@ -74,6 +104,15 @@ func (cmd TrainRecordAddCmd) Validate() error {
 
 type TrainRecordAddCmd struct {
 	domain.TrainRecord
+}
+
+type TrainIncreaseCmd struct {
+	StartTime string `json:"start_time"`
+	EndTime   string `json:"end_time"`
+}
+
+type TrainsDTO struct {
+	Counts int64 `json:"counts"`
 }
 
 type TrainRecordDTO struct {
