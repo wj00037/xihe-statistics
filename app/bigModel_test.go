@@ -17,7 +17,6 @@ func TestRemoveRepeatedElement(t *testing.T) {
 		args       args
 		wantNewArr []string
 	}{
-		// TODO: Add test cases.
 		{
 			name: "case1",
 			args: args{
