@@ -38,6 +38,7 @@ type MQ struct {
 
 type Topics struct {
 	Statistics string `mapstructure:"statistics" json:"statistics" required:"true"`
+	GitLab     string `mapstructure:"gitlab" json:"gitlab" required:"true"`
 }
 
 func (cfg *SrvConfig) GetMQConfig() mq.MQConfig {

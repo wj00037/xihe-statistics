@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/opensourceways/community-robot-lib/kafka"
 	"github.com/opensourceways/community-robot-lib/mq"
@@ -36,6 +37,15 @@ func Subscribe(ctx context.Context, handler interface{}, log *logrus.Entry) erro
 		subscribers[s.Topic()] = s
 	}
 
+	// register gitlab statistics
+	s, err = registerHandlerForGitLab(handler)
+	if err != nil {
+		return err
+	}
+	if s != nil {
+		subscribers[s.Topic()] = s
+	}
+
 	// register end
 	if len(subscribers) == 0 {
 		return nil
@@ -46,7 +56,7 @@ func Subscribe(ctx context.Context, handler interface{}, log *logrus.Entry) erro
 	return nil
 }
 
-func do(handler interface{}, msg *mq.Message) (err error) {
+func statisticsDo(handler interface{}, msg *mq.Message) (err error) {
 	if msg == nil {
 		return
 	}
@@ -104,20 +114,6 @@ func do(handler interface{}, msg *mq.Message) (err error) {
 
 		return h.AddRegisterRecord(&d)
 
-	case "statistics-fileUpload":
-		h, ok := handler.(message.FileUploadRecordHandler)
-		if !ok {
-			return
-		}
-
-		fr := domain.FileUploadRecord{
-			UserName:   body.User,
-			UploadPath: body.Info["upload_path"],
-			CreateAt:   body.When,
-		}
-
-		return h.AddUploadFileRecord(&fr)
-
 	case "statistics-download":
 		h, ok := handler.(message.DownloadRecordHandler)
 		if !ok {
@@ -152,8 +148,57 @@ func do(handler interface{}, msg *mq.Message) (err error) {
 	return
 }
 
+func gitLabDo(
+	handler message.FileUploadRecordHandler,
+	msg *mq.Message,
+) (err error) {
+	if msg == nil {
+		return
+	}
+
+	body := msgGitLab{}
+	if err = json.Unmarshal(msg.Body, &body); err != nil {
+		return
+	}
+
+	if body.ObjectKind != "push" {
+		return
+	}
+
+	username := body.UserName
+	uploadPath := body.UserName + "/" + body.Project.Name
+	creatAt := body.Commits.TimeStamp
+
+	// tranfer time to unix time
+	local, _ := time.LoadLocation("Asia/Shanghai")
+	stamp, err := time.ParseInLocation("2006-01-02T15:04:05+00:00", creatAt, local)
+	if err != nil {
+		return
+	}
+	creatAtUnix := stamp.Unix() + 8*60*60
+
+	fr := domain.FileUploadRecord{
+		UserName:   username,
+		UploadPath: uploadPath,
+		CreateAt:   creatAtUnix,
+	}
+
+	return handler.AddUploadFileRecord(&fr)
+}
+
 func registerHandlerForStatistics(handler interface{}) (mq.Subscriber, error) {
 	return kafka.Subscribe(topics.Statistics, func(e mq.Event) (err error) {
-		return do(handler, e.Message())
+		return statisticsDo(handler, e.Message())
+	})
+}
+
+func registerHandlerForGitLab(handler interface{}) (mq.Subscriber, error) {
+	h, ok := handler.(message.FileUploadRecordHandler)
+	if !ok {
+		return nil, nil
+	}
+
+	return kafka.Subscribe(topics.GitLab, func(e mq.Event) error {
+		return gitLabDo(h, e.Message())
 	})
 }
