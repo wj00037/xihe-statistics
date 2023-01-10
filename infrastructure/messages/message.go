@@ -11,7 +11,7 @@ type msgGitLab struct {
 	ObjectKind string `json:"object_kind"`
 	UserName   string `json:"user_name"`
 	Project    `json:"project"`
-	Commits    `json:"commits"`
+	Commits    []Commits `json:"commits"`
 }
 
 type Project struct {

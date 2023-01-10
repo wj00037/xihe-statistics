@@ -171,7 +171,7 @@ func gitLabDo(
 
 	username := body.UserName
 	uploadPath := body.UserName + "/" + body.Project.Name
-	creatAt := body.Commits.TimeStamp
+	creatAt := body.Commits[0].TimeStamp
 
 	// tranfer time to unix time
 	local, _ := time.LoadLocation("Asia/Shanghai")
