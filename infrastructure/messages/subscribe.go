@@ -66,10 +66,13 @@ func do(handler interface{}, msg *mq.Message) (err error) {
 		}
 
 		bmr := domain.UserWithBigModel{}
+
 		if bmr.BigModel, err = domain.NewBigModel(body.Info["bigmodel"]); err != nil {
 			return
 		}
-		bmr.UserName = body.User
+		if bmr.UserName, err = domain.NewAccount(body.User); err != nil {
+			return
+		}
 		bmr.CreateAt = body.When
 
 		return h.AddBigModelRecord(&bmr)

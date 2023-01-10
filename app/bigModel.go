@@ -1,18 +1,13 @@
 package app
 
 import (
-	"errors"
-
 	"project/xihe-statistics/domain"
 	"project/xihe-statistics/domain/repository"
 )
 
 func (cmd *UserWithBigModelAddCmd) Validate() error {
-	err := errors.New("invalid cmd of add user query big model record")
-
-	b := cmd.UserName != ""
-
-	if !b {
+	_, err := domain.NewAccount(cmd.UserName.Account())
+	if err != nil {
 		return err
 	}
 
@@ -63,7 +58,7 @@ func (b bigModelRecordService) GetBigModelRecordsByType(d domain.BigModel) (dto 
 
 	users := make([]string, len(bm))
 	for j := range bm {
-		users[j] = bm[j].UserName
+		users[j] = bm[j].UserName.Account()
 	}
 	users = RemoveRepeatedElement(users)
 
@@ -133,7 +128,7 @@ func (b bigModelRecordService) GetBigModelRecordAll() (dto BigModelAllDTO, err e
 
 		users := make([]string, len(bm))
 		for j := range bm {
-			users[j] = bm[j].UserName
+			users[j] = bm[j].UserName.Account()
 		}
 		users = RemoveRepeatedElement(users) // TODO: maybe there is way to optimize
 

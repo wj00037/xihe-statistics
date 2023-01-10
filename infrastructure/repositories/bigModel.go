@@ -64,7 +64,8 @@ func (impl bigmodel) GetAll() (ds []domain.UserWithBigModel, err error) {
 
 func (impl bigmodel) toBigmodelRecordDO(d *domain.UserWithBigModel) BigModelDO {
 	do := BigModelDO{
-		UserName: d.UserName,
+		UserName: d.UserName.Account(),
+		
 		BigModel: d.BigModel.BigModel(),
 		CreateAt: d.CreateAt,
 	}
@@ -73,8 +74,11 @@ func (impl bigmodel) toBigmodelRecordDO(d *domain.UserWithBigModel) BigModelDO {
 }
 
 func (b *BigModelDO) toBigModel(d *domain.UserWithBigModel) (err error) {
-	d.UserName = b.UserName
+	if d.UserName, err = domain.NewAccount(b.UserName); err != nil {
+		return
+	}
 	d.BigModel, err = domain.NewBigModel(b.BigModel)
 	d.CreateAt = b.CreateAt
+
 	return
 }

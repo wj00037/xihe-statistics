@@ -16,7 +16,9 @@ func (req *BigModelCreateRequest) toCmd() (cmd app.UserWithBigModelAddCmd, err e
 		return
 	}
 
-	cmd.UserName = req.UserName
+	if cmd.UserName, err = domain.NewAccount(req.UserName); err != nil {
+		return
+	}
 
 	return
 }
