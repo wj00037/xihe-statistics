@@ -93,8 +93,13 @@ func statisticsDo(handler interface{}, msg *mq.Message) (err error) {
 			return
 		}
 
+		username, err := domain.NewAccount(body.User)
+		if err != nil {
+			return err
+		}
+
 		uwr := domain.UserWithRepo{
-			UserName: body.User,
+			UserName: username,
 			RepoName: body.Info["name"],
 			CreateAt: body.When,
 		}

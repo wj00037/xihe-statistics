@@ -51,7 +51,7 @@ func (s repoRecordService) Get() (dto RepoRecordDTO, err error) {
 func (cmd RepoRecordAddCmd) Validate() error {
 	repo := cmd.UserWithRepo
 
-	b := repo.UserName == "" ||
+	b := repo.UserName == nil ||
 		repo.RepoName == "" ||
 		repo.CreateAt == 0
 

@@ -42,7 +42,7 @@ func (impl userWithRepo) Get() (r repository.RepoRecords, err error) {
 
 func (impl userWithRepo) toUserWithRepoDO(u *domain.UserWithRepo) UserWithRepoDO {
 	do := UserWithRepoDO{
-		UserName: u.UserName,
+		UserName: u.UserName.Account(),
 		RepoName: u.RepoName,
 		CreateAt: u.CreateAt,
 	}
