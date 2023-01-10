@@ -7,7 +7,7 @@ import (
 func GetBigModelTypeList() []string {
 	return []string{"vqa", "gen_picture",
 		"desc_picture", "luojia", "pangu",
-		"codegeex"}
+		"codegeex", "wukong"}
 }
 
 // BigModel
