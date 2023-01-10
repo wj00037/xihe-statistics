@@ -156,6 +156,8 @@ func gitLabDo(
 		return
 	}
 
+	fmt.Printf("msg.Body: %v\n", msg.Body)
+
 	body := msgGitLab{}
 	if err = json.Unmarshal(msg.Body, &body); err != nil {
 		return
@@ -164,6 +166,8 @@ func gitLabDo(
 	if body.ObjectKind != "push" {
 		return
 	}
+
+	fmt.Printf("body: %v\n", body)
 
 	username := body.UserName
 	uploadPath := body.UserName + "/" + body.Project.Name
