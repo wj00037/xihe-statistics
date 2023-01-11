@@ -40,7 +40,7 @@ func (impl registerRecord) Get() (do repository.RegisterCounts, err error) {
 
 func (impl registerRecord) toRegisterRecordDO(d *domain.RegisterRecord) RegisterRecordDO {
 	do := RegisterRecordDO{
-		UserName: d.UserName,
+		UserName: d.UserName.Account(),
 		CreateAt: d.CreateAt,
 	}
 	return do

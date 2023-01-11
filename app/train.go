@@ -90,7 +90,7 @@ func (cmd TrainRecordAddCmd) toTrainRecord(
 }
 
 func (cmd TrainRecordAddCmd) Validate() error {
-	b := cmd.UserName == "" ||
+	b := cmd.UserName == nil ||
 		cmd.ProjectId == "" ||
 		cmd.TrainId == "" ||
 		cmd.CreateAt == 0

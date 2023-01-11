@@ -55,7 +55,7 @@ func (cmd RegisterRecordAddCmd) toRegisterRecord(
 
 func (cmd RegisterRecordAddCmd) Validate() error {
 	register := cmd.RegisterRecord
-	b := register.UserName == "" ||
+	b := register.UserName == nil ||
 		register.CreateAt == 0
 
 	if b {

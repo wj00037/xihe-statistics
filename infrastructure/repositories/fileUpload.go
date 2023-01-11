@@ -39,7 +39,7 @@ func (impl fileUploadRecord) toFileUploadRecordDO(
 	d *domain.FileUploadRecord,
 ) FileUploadRecordDO {
 	return FileUploadRecordDO{
-		UserName:   d.UserName,
+		UserName:   d.UserName.Account(),
 		UploadPath: d.UploadPath,
 		CreateAt:   d.CreateAt,
 	}

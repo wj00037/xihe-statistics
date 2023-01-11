@@ -50,7 +50,7 @@ func (cmd *DownloadRecordAddCmd) toDownloadRecord(
 }
 
 func (cmd DownloadRecordAddCmd) Validate() error {
-	b := cmd.UserName == "" ||
+	b := cmd.UserName == nil ||
 		cmd.DownloadPath == "" ||
 		cmd.CreateAt == 0
 

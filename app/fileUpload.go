@@ -64,7 +64,7 @@ func (cmd FileUploadRecordAddCmd) toFileUploadRecord(
 func (cmd FileUploadRecordAddCmd) Validate() error {
 	fileUpload := cmd.FileUploadRecord
 
-	b := fileUpload.UserName == "" ||
+	b := fileUpload.UserName == nil ||
 		fileUpload.UploadPath == "" ||
 		fileUpload.CreateAt == 0
 	if b {

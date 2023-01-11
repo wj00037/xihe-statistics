@@ -40,7 +40,7 @@ type TrainRecordDO struct {
 
 func (impl trainRecord) toTrainRecordDO(tr *domain.TrainRecord) (do TrainRecordDO) {
 	do = TrainRecordDO{
-		UserName:  tr.UserName,
+		UserName:  tr.UserName.Account(),
 		ProjectId: tr.ProjectId,
 		TrainId:   tr.TrainId,
 		CreateAt:  tr.CreateAt,

@@ -112,8 +112,13 @@ func statisticsDo(handler interface{}, msg *mq.Message) (err error) {
 			return
 		}
 
+		username, err := domain.NewAccount(body.User)
+		if err != nil {
+			return err
+		}
+
 		d := domain.RegisterRecord{
-			UserName: body.User,
+			UserName: username,
 			CreateAt: body.When,
 		}
 
@@ -125,8 +130,13 @@ func statisticsDo(handler interface{}, msg *mq.Message) (err error) {
 			return
 		}
 
+		username, err := domain.NewAccount(body.User)
+		if err != nil {
+			return err
+		}
+
 		dr := domain.DownloadRecord{
-			UserName:     body.User,
+			UserName:     username,
 			DownloadPath: body.Info["download_path"],
 			CreateAt:     body.When,
 		}
@@ -139,8 +149,13 @@ func statisticsDo(handler interface{}, msg *mq.Message) (err error) {
 			return
 		}
 
+		username, err := domain.NewAccount(body.User)
+		if err != nil {
+			return err
+		}
+
 		tr := domain.TrainRecord{
-			UserName:  body.User,
+			UserName:  username,
 			ProjectId: body.Info["project_id"],
 			TrainId:   body.Info["id"],
 			CreateAt:  body.When,
@@ -170,7 +185,10 @@ func gitLabDo(
 		return
 	}
 
-	username := body.UserName
+	username, err := domain.NewAccount(body.UserName)
+	if err != nil {
+		return
+	}
 	uploadPath := body.UserName + "/" + body.Project.Name
 	creatAt := body.Commits[0].TimeStamp
 

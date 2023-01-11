@@ -38,7 +38,7 @@ func (impl downloadRecord) toDownloadRecordDO(dr *domain.DownloadRecord) (
 	err error,
 ) {
 	do = DownloadRecordDO{
-		UserName:     dr.UserName,
+		UserName:     dr.UserName.Account(),
 		DownloadPath: dr.DownloadPath,
 		CreateAt:     dr.CreateAt,
 	}
