@@ -169,6 +169,7 @@ func (cmd *UserWithBigModelAddCmd) toBigModel(r *domain.UserWithBigModel) {
 	}
 }
 
+// RemoveRepeatedElement: Remove repeate string value return new arry after finish
 func RemoveRepeatedElement(arr []string) (newArr []string) {
 	newArr = make([]string, 0)
 	for i := 0; i < len(arr); i++ {
