@@ -42,6 +42,7 @@ func (m bigModel) Get(t string) (cols []repositories.BigModelDO, err error) {
 	f := func(ctx context.Context) error {
 		return cli.filter(
 			ctx, m.table,
+			"bigmodel=?",
 			t, &records,
 		)
 	}

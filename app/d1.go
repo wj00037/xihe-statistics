@@ -40,23 +40,24 @@ func (s d1Service) Get() (dto D1DTO, err error) {
 	}
 	repoUsers := rdto.Users
 
-	counts := len(bigModelUsers) + len(repoUsers)
+	duCounts := len(bigModelUsers) + len(repoUsers)
 
 	users := append(bigModelUsers, repoUsers...)
 	users = RemoveRepeatedElement(users)
 
 	dto = D1DTO{
-		Counts:            counts,
-		DeduplicateCounts: len(users),
-		Users:             users,
-		UpdateAt:          getLocalTime(),
+		Counts:          len(users),
+		DuplicateCounts: duCounts,
+		Users:           users,
+		UpdateAt:        getLocalTime(),
 	}
+
 	return
 }
 
 type D1DTO struct {
-	Counts            int      `json:"counts"`
-	DeduplicateCounts int      `json:"deduplicate_counts"`
-	Users             []string `json:"users"`
-	UpdateAt          string   `json:"update_at"`
+	Counts          int      `json:"counts"`
+	DuplicateCounts int      `json:"duplicate_counts"`
+	Users           []string `json:"users"`
+	UpdateAt        string   `json:"update_at"`
 }

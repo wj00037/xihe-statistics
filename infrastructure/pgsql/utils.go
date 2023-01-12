@@ -17,11 +17,12 @@ func (cli *client) create(
 
 func (cli *client) filter(
 	ctx context.Context, table interface{},
-	t string, b *[]BigModelRecord,
+	condition string, t string, 
+	b *[]BigModelRecord,
 ) error {
 	return cli.db.WithContext(ctx).
 		Model(table).
-		Where("bigmodel=?", t).
+		Where(condition, t).
 		Find(&b).Error
 }
 

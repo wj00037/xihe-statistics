@@ -56,17 +56,20 @@ func (b bigModelRecordService) GetBigModelRecordsByType(d domain.BigModel) (dto 
 		return
 	}
 
-	users := make([]string, len(bm))
+	calls := len(bm)
+
+	users := make([]string, calls)
 	for j := range bm {
 		users[j] = bm[j].UserName.Account()
 	}
 	users = RemoveRepeatedElement(users)
 
 	dto = BigModelDTO{
-		BigModel: d.BigModel(),
-		Users:    users,
-		Counts:   len(users),
-		UpdateAt: getLocalTime(),
+		BigModel:   d.BigModel(),
+		Users:      users,
+		Calls:     int64(calls),
+		Counts: len(users),
+		UpdateAt:   getLocalTime(),
 	}
 
 	return
@@ -110,6 +113,7 @@ func (s bigModelRecordService) GetCountsByTypeAndTimeDiff(
 func (b bigModelRecordService) GetBigModelRecordAll() (dto BigModelAllDTO, err error) {
 	var (
 		bigmodel domain.BigModel
+		calls    int
 		counts   = 0
 		usersAll []string
 	)
@@ -126,6 +130,8 @@ func (b bigModelRecordService) GetBigModelRecordAll() (dto BigModelAllDTO, err e
 			return dto, err
 		}
 
+		calls += len(bm)
+
 		users := make([]string, len(bm))
 		for j := range bm {
 			users[j] = bm[j].UserName.Account()
@@ -140,6 +146,7 @@ func (b bigModelRecordService) GetBigModelRecordAll() (dto BigModelAllDTO, err e
 
 	dto = BigModelAllDTO{
 		Users:             usersAll,
+		Calls:             int64(calls),
 		Counts:            counts,
 		DedupliacteCounts: len(usersAll),
 		UpdateAt:          getLocalTime(),
@@ -182,14 +189,16 @@ func RemoveRepeatedElement(arr []string) (newArr []string) {
 type BigModelDTO struct {
 	BigModel string   `json:"bigmodel"`
 	Users    []string `json:"users"`
-	Counts   int      `json:"counts"`
+	Calls    int64    `json:"counts"`      // calls
+	Counts   int      `json:"user_counts"` // xihe user counts
 	UpdateAt string   `json:"update_at"`
 }
 
 type BigModelAllDTO struct {
 	Users             []string `json:"users"`
-	Counts            int      `json:"counts"`
-	DedupliacteCounts int      `json:"deduplicate_counts"`
+	Counts            int      `json:"user_counts"`        // xihe user counts
+	Calls             int64    `json:"counts"`             // calls
+	DedupliacteCounts int      `json:"deduplicate_counts"` // xihe user deduplicate_counts
 	UpdateAt          string   `json:"update_at"`
 }
 
