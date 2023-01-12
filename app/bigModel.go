@@ -65,11 +65,11 @@ func (b bigModelRecordService) GetBigModelRecordsByType(d domain.BigModel) (dto 
 	users = RemoveRepeatedElement(users)
 
 	dto = BigModelDTO{
-		BigModel:   d.BigModel(),
-		Users:      users,
-		Calls:     int64(calls),
-		Counts: len(users),
-		UpdateAt:   getLocalTime(),
+		BigModel: d.BigModel(),
+		Users:    users,
+		Calls:    int64(calls),
+		Counts:   len(users),
+		UpdateAt: getLocalTime(),
 	}
 
 	return
