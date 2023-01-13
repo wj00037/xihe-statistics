@@ -124,7 +124,7 @@ func statisticsDo(handler interface{}, msg *mq.Message) (err error) {
 
 		return h.AddRegisterRecord(&d)
 
-	case "statistics-download":
+	case "download":
 		h, ok := handler.(message.DownloadRecordHandler)
 		if !ok {
 			return
@@ -137,7 +137,7 @@ func statisticsDo(handler interface{}, msg *mq.Message) (err error) {
 
 		dr := domain.DownloadRecord{
 			UserName:     username,
-			DownloadPath: body.Info["download_path"],
+			DownloadPath: body.Info["path"],
 			CreateAt:     body.When,
 		}
 
