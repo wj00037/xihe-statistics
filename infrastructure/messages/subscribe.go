@@ -137,7 +137,7 @@ func statisticsDo(handler interface{}, msg *mq.Message) (err error) {
 
 		dr := domain.DownloadRecord{
 			UserName:     username,
-			DownloadPath: body.Info["path"] + "/" + body.Info["repo"],
+			DownloadPath: body.Info["repo"] + "/" + body.Info["path"],
 			CreateAt:     body.When,
 		}
 
