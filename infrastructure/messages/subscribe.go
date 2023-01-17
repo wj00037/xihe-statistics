@@ -181,6 +181,8 @@ func gitLabDo(
 		return
 	}
 
+	fmt.Printf("body: %v\n", body)
+
 	if body.ObjectKind != "push" {
 		return
 	}
