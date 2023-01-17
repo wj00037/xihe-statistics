@@ -194,7 +194,7 @@ func gitLabDo(
 	uploadPath := body.UserName + "/" + body.Project.Name
 	creatAt := body.Commits[0].TimeStamp
 
-	// tranfer time to unix time
+	// tranfer time to unix time.
 	local, _ := time.LoadLocation("Asia/Shanghai")
 	stamp, err := time.ParseInLocation("2006-01-02T15:04:05+00:00", creatAt, local)
 	if err != nil {
