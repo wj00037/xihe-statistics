@@ -196,11 +196,11 @@ func gitLabDo(
 
 	// tranfer time to unix time.
 	local, _ := time.LoadLocation("Asia/Shanghai")
-	stamp, err := time.ParseInLocation("2006-01-02T15:04:05+00:00", creatAt, local)
+	stamp, err := time.ParseInLocation("2006-01-02T15:04:05+08:00", creatAt, local)
 	if err != nil {
 		return
 	}
-	creatAtUnix := stamp.Unix() + 8*60*60
+	creatAtUnix := stamp.Unix()
 
 	fr := domain.FileUploadRecord{
 		UserName:   username,
