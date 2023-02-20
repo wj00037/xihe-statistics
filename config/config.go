@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/opensourceways/community-robot-lib/mq"
@@ -20,6 +21,7 @@ type SrvConfig struct {
 	Duration int    `mapstructure:"duration"`
 	*PGSQL   `mapstructure:"pgsql"`
 	*MQ      `mapstructure:"mq"`
+	*GitLab  `mapstructure:"gitlab"`
 }
 
 type PGSQL struct {
@@ -34,6 +36,13 @@ type MQ struct {
 	Address  string `mapstructure:"address"`
 	MaxRetry int    `mapstructure:"max_retry"`
 	Topics   `mapstructure:"topics"`
+}
+
+type GitLab struct {
+	RootToken    string        `mapstructure:"root_token"`
+	Endponit     string        `mapstructure:"endpoint"`
+	CountPerPage int           `mapstructure:"count_per_page"`
+	RefreshTime  time.Duration `mapstructure:"refresh_time"`
 }
 
 type Topics struct {

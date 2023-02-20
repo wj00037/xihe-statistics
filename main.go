@@ -10,6 +10,7 @@ import (
 
 	"project/xihe-statistics/config"
 	"project/xihe-statistics/controller"
+	"project/xihe-statistics/infrastructure/gitlab"
 	"project/xihe-statistics/infrastructure/messages"
 	"project/xihe-statistics/infrastructure/pgsql"
 	"project/xihe-statistics/server"
@@ -46,6 +47,9 @@ func main() {
 
 	// mq
 	go messages.Run(messages.NewHandler(config.Conf, log), log)
+
+	// gitlab statisitc
+	go gitlab.Run(gitlab.NewHandler(config.Conf, log), log, config.Conf)
 
 	// gin
 	server.StartWebServer(config.Conf.HttpPort, time.Duration(config.Conf.Duration))

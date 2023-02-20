@@ -47,11 +47,21 @@ func (FileUploadRecord) TableName() string {
 type DownloadRecord struct {
 	UserName     string `gorm:"column:username"`
 	DownloadPath string `gorm:"column:download_path"`
-	CreateAt     int64  `gorm:"create_at"`
+	CreateAt     int64  `gorm:"column:create_at"`
 }
 
 func (DownloadRecord) TableName() string {
 	return "download_record"
+}
+
+// GitLab
+type GitLabRecord struct {
+	Counts   int64 `gorm:"column:counts"`
+	CreateAt int64 `gorm:"column:create_at"`
+}
+
+func (GitLabRecord) TableName() string {
+	return "gitlab_record"
 }
 
 // Train
