@@ -6,6 +6,7 @@ import (
 
 type GitLabRecordMapper interface {
 	InsertCloneCount(*CloneCountDO) error
+	GetLast() (CloneCountDO, error)
 }
 
 func NewGitLabRecordRepository(mapper GitLabRecordMapper) repository.Gitlab {
@@ -19,6 +20,19 @@ type gitlabRecord struct {
 func (impl gitlabRecord) InsertCloneCount(cc *repository.CloneCount) error {
 	do := impl.toCloneCountDO(cc)
 	return impl.mapper.InsertCloneCount(&do)
+}
+
+func (impl gitlabRecord) Get() (cc repository.CloneCount, err error) {
+	do, err := impl.mapper.GetLast()
+	if err != nil {
+		return
+	}
+	cc = repository.CloneCount{
+		Counts:   do.Counts,
+		CreateAt: do.CreateAt,
+	}
+
+	return
 }
 
 type CloneCountDO struct {

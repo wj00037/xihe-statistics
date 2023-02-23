@@ -8,6 +8,7 @@ import (
 )
 
 type GitLabService interface {
+	Get() (CloneCountsOutDTO, error)
 	Counts() (CloneCountsDTO, error)
 	Save(*CloneCountsCmd) error
 }
@@ -25,6 +26,15 @@ func NewGitLabService(
 		pf: pf,
 		gl: gl,
 	}
+}
+
+func (g *gitLabService) Get() (dto CloneCountsOutDTO, err error) {
+	cc, err := g.gl.Get()
+	if err != nil {
+		return
+	}
+
+	return g.toCloneCountsOutDTO(&cc)
 }
 
 func (g *gitLabService) Counts() (dto CloneCountsDTO, err error) {
@@ -90,6 +100,11 @@ type CloneCountsDTO struct {
 	CreateAt int64 `json:"create_at"`
 }
 
+type CloneCountsOutDTO struct {
+	Counts   int64  `json:"counts"`
+	CreateAt string `json:"create_at"`
+}
+
 type CloneCountsCmd struct {
 	Counts   int64 `json:"counts"`
 	CreateAt int64 `json:"create_at"`
@@ -99,5 +114,12 @@ func (g *gitLabService) toCloneCount(cmd *CloneCountsCmd) (repository.CloneCount
 	return repository.CloneCount{
 		Counts:   cmd.Counts,
 		CreateAt: cmd.CreateAt,
+	}, nil
+}
+
+func (g *gitLabService) toCloneCountsOutDTO(cc *repository.CloneCount) (CloneCountsOutDTO, error) {
+	return CloneCountsOutDTO{
+		Counts:   cc.Counts,
+		CreateAt: toStrTime(cc.CreateAt),
 	}, nil
 }

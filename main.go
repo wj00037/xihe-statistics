@@ -52,5 +52,5 @@ func main() {
 	go gitlab.Run(gitlab.NewHandler(config.Conf, log), log, config.Conf)
 
 	// gin
-	server.StartWebServer(config.Conf.HttpPort, time.Duration(config.Conf.Duration))
+	server.StartWebServer(config.Conf.HttpPort, time.Duration(config.Conf.Duration), config.Conf)
 }

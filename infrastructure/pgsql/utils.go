@@ -17,7 +17,7 @@ func (cli *client) create(
 
 func (cli *client) filter(
 	ctx context.Context, table interface{},
-	condition string, t string, 
+	condition string, t string,
 	b *[]BigModelRecord,
 ) error {
 	return cli.db.WithContext(ctx).
@@ -87,4 +87,13 @@ func (cli *client) whereCount(
 		Model(table).
 		Where(condition, v1, v2).
 		Count(counts).Error
+}
+
+func (cli *client) getLast(
+	ctx context.Context, table interface{},
+	result interface{},
+) error {
+	return cli.db.WithContext(ctx).
+		Model(table).
+		Last(result).Error
 }

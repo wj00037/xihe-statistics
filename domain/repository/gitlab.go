@@ -7,4 +7,5 @@ type CloneCount struct {
 
 type Gitlab interface {
 	InsertCloneCount(*CloneCount) error
+	Get() (CloneCount, error)
 }

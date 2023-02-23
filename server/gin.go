@@ -11,8 +11,10 @@ import (
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
+	"project/xihe-statistics/config"
 	"project/xihe-statistics/controller"
 	"project/xihe-statistics/docs"
+	"project/xihe-statistics/infrastructure/gitlab"
 	"project/xihe-statistics/infrastructure/pgsql"
 	"project/xihe-statistics/infrastructure/repositories"
 )
@@ -24,12 +26,12 @@ type Service struct {
 	Timeout time.Duration
 }
 
-func StartWebServer(port int, timeout time.Duration) {
+func StartWebServer(port int, timeout time.Duration, cfg *config.SrvConfig) {
 	r := gin.New()
 	r.Use(gin.Recovery())
 	r.Use(logRequest())
 
-	setRouter(r)
+	setRouter(r, cfg)
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf(":%d", port),
@@ -42,7 +44,7 @@ func StartWebServer(port int, timeout time.Duration) {
 }
 
 //setRouter init router
-func setRouter(engine *gin.Engine) {
+func setRouter(engine *gin.Engine, cfg *config.SrvConfig) {
 	docs.SwaggerInfo.BasePath = "/api"
 	docs.SwaggerInfo.Title = "xihe-statistics"
 	docs.SwaggerInfo.Description = ""
@@ -72,6 +74,12 @@ func setRouter(engine *gin.Engine) {
 		pgsql.NewTrainRecordMapper(pgsql.TrainRecord{}),
 	)
 
+	gitlabRecord := repositories.NewGitLabRecordRepository(
+		pgsql.NewGitLabRecordMapper(pgsql.GitLabRecord{}),
+	)
+
+	platform := gitlab.NewGitlabStatistics(cfg)
+
 	// controller -> gin
 	v1 := engine.Group(docs.SwaggerInfo.BasePath)
 	{
@@ -97,7 +105,7 @@ func setRouter(engine *gin.Engine) {
 		)
 
 		controller.AddRouterForDownloadRecordController(
-			v1, downloadRecord,
+			v1, downloadRecord, platform, gitlabRecord,
 		)
 
 		controller.AddRouterForTrainRecordController(

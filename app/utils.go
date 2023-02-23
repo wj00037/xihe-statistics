@@ -9,7 +9,10 @@ var (
 
 func getLocalTime() (t string) {
 	return time.Now().In(cstSh).Format(timeFormat)
+}
 
+func toStrTime(t int64) string {
+	return time.Unix(t, 0).In(cstSh).Format(timeFormat)
 }
 
 func getUnixLocalTime() (t int64) {

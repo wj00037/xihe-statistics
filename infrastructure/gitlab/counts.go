@@ -15,7 +15,7 @@ func NewGitlabStatistics(cfg *config.SrvConfig) platform.PlatForm {
 	return &gitlabStatistics{
 		token:        cfg.GitLab.RootToken,
 		endpoint:     cfg.GitLab.Endponit,
-		countPerPage: cfg.CountPerPage,
+		countPerPage: cfg.GitLab.CountPerPage,
 		cli:          utils.NewHttpClient(3),
 	}
 }
