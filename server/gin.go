@@ -26,7 +26,7 @@ type Service struct {
 	Timeout time.Duration
 }
 
-func StartWebServer(port int, timeout time.Duration, cfg *config.SrvConfig) {
+func StartWebServer(port int, timeout time.Duration, cfg *config.Config) {
 	r := gin.New()
 	r.Use(gin.Recovery())
 	r.Use(logRequest())
@@ -44,13 +44,12 @@ func StartWebServer(port int, timeout time.Duration, cfg *config.SrvConfig) {
 }
 
 //setRouter init router
-func setRouter(engine *gin.Engine, cfg *config.SrvConfig) {
+func setRouter(engine *gin.Engine, cfg *config.Config) {
 	docs.SwaggerInfo.BasePath = "/api"
 	docs.SwaggerInfo.Title = "xihe-statistics"
 	docs.SwaggerInfo.Description = ""
 
 	bigModelRecord := repositories.NewBigModelRecordRepository(
-		// infrastructure.pgsql -> infrastructure.repositories (mapper)
 		pgsql.NewBigModelMapper(pgsql.BigModelRecord{}),
 	)
 

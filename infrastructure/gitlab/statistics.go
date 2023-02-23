@@ -16,7 +16,7 @@ type Handler struct {
 	gs app.GitLabService
 }
 
-func NewHandler(cfg *config.SrvConfig, log *logrus.Entry) *Handler {
+func NewHandler(cfg *config.Config, log *logrus.Entry) *Handler {
 	platform := NewGitlabStatistics(cfg)
 
 	gitlabRecord := repositories.NewGitLabRecordRepository(
@@ -38,13 +38,13 @@ func Do(h *Handler) error {
 	}
 
 	// TODO: must check if dto."counts" is bigger than before,
-	// in case some project deleted decreasing counts
+	// in case some project deleted makes counts decreasing
 	cmd := app.CloneCountsCmd(dto)
 	return h.gs.Save(&cmd)
 }
 
-func Run(h *Handler, log *logrus.Entry, cfg *config.SrvConfig) {
-	ticker := time.NewTicker(time.Second * cfg.GitLab.RefreshTime)
+func Run(h *Handler, log *logrus.Entry, cfg *config.Config) {
+	ticker := time.NewTicker(time.Second * 86400)	// TODO: check config reading
 	defer ticker.Stop()
 
 	// to excute Do at function Run started

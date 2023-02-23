@@ -2,55 +2,60 @@ package config
 
 import (
 	"errors"
-	"fmt"
 	"regexp"
 	"strings"
 	"time"
 
-	"github.com/fsnotify/fsnotify"
 	"github.com/opensourceways/community-robot-lib/mq"
-	"github.com/spf13/viper"
+	"github.com/opensourceways/community-robot-lib/utils"
 )
 
 var reIpPort = regexp.MustCompile(`^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}:[1-9][0-9]*$`)
-var Conf = new(SrvConfig)
 
-type SrvConfig struct {
-	Name     string `mapstructure:"name"`
-	HttpPort int    `mapstructure:"http_port"`
-	Duration int    `mapstructure:"duration"`
-	*PGSQL   `mapstructure:"pgsql"`
-	*MQ      `mapstructure:"mq"`
-	*GitLab  `mapstructure:"gitlab"`
+func LoadConfig(path string, cfg interface{}) error {
+	if err := utils.LoadFromYaml(path, cfg); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+type Config struct {
+	Name     string `json:"name"`
+	HttpPort int    `json:"http_port"`
+	Duration int    `json:"duration"`
+	PGSQL    PGSQL  `json:"pgsql"`
+	MQ       MQ     `json:"mq"`
+	GitLab   GitLab `json:"gitlab"`
 }
 
 type PGSQL struct {
-	Host     string `mapstructure:"host"`
-	Port     string `mapstructure:"port"`
-	User     string `mapstructure:"user"`
-	DBName   string `mapstructure:"db_name"`
-	Password string `mapstructure:"password"`
+	Host     string `json:"host"`
+	Port     string `json:"port"`
+	User     string `json:"user"`
+	DBName   string `json:"db_name"`
+	Password string `json:"password"`
 }
 
 type MQ struct {
-	Address  string `mapstructure:"address"`
-	MaxRetry int    `mapstructure:"max_retry"`
-	Topics   `mapstructure:"topics"`
+	Address  string `json:"address"`
+	MaxRetry int    `json:"max_retry"`
+	Topics   `json:"topics"`
 }
 
 type GitLab struct {
-	RootToken    string        `mapstructure:"root_token"`
-	Endponit     string        `mapstructure:"endpoint"`
-	CountPerPage int           `mapstructure:"count_per_page"`
-	RefreshTime  time.Duration `mapstructure:"refresh_time"`
+	RootToken    string        `json:"root_token"`
+	Endponit     string        `json:"endpoint"`
+	CountPerPage int           `json:"count_per_page"`
+	RefreshTime  time.Duration `json:"refresh_time"`
 }
 
 type Topics struct {
-	Statistics string `mapstructure:"statistics" json:"statistics" required:"true"`
-	GitLab     string `mapstructure:"gitlab" json:"gitlab" required:"true"`
+	Statistics string `json:"statistics" required:"true"`
+	GitLab     string `json:"gitlab" required:"true"`
 }
 
-func (cfg *SrvConfig) GetMQConfig() mq.MQConfig {
+func (cfg *Config) GetMQConfig() mq.MQConfig {
 	return mq.MQConfig{
 		Addresses: cfg.MQ.ParseAddress(),
 	}
@@ -74,28 +79,4 @@ func (cfg *MQ) ParseAddress() []string {
 	}
 
 	return r
-}
-
-// viper init
-func Init(filePath string) (err error) {
-	viper.SetConfigFile(filePath)
-
-	err = viper.ReadInConfig()
-	if err != nil {
-		fmt.Printf("viper.ReadInConfig failed, err:%v\n", err)
-		return
-	}
-
-	if err := viper.Unmarshal(Conf); err != nil {
-		fmt.Printf("viper.Unmarshal failed, err:%v\n", err)
-	}
-
-	viper.WatchConfig()
-	viper.OnConfigChange(func(in fsnotify.Event) {
-		fmt.Println("配置文件修改了...")
-		if err := viper.Unmarshal(Conf); err != nil {
-			fmt.Printf("viper.Unmarshal failed, err:%v\n", err)
-		}
-	})
-	return
 }

@@ -37,7 +37,7 @@ func Exit(log *logrus.Entry) {
 	}
 }
 
-func NewHandler(cfg *config.SrvConfig, log *logrus.Entry) *Handler {
+func NewHandler(cfg *config.Config, log *logrus.Entry) *Handler {
 
 	bigModelRecord := repositories.NewBigModelRecordRepository(
 		// infrastructure.mongodb -> infrastructure.repositories (mapper)
@@ -73,7 +73,7 @@ func NewHandler(cfg *config.SrvConfig, log *logrus.Entry) *Handler {
 
 	return &Handler{
 		Log:      log,
-		MaxRetry: config.Conf.MQ.MaxRetry,
+		MaxRetry: cfg.MQ.MaxRetry,
 
 		BigModel:   bs,
 		Repo:       rs,

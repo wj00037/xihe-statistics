@@ -11,11 +11,11 @@ import (
 	"github.com/opensourceways/community-robot-lib/utils"
 )
 
-func NewGitlabStatistics(cfg *config.SrvConfig) platform.PlatForm {
+func NewGitlabStatistics(cfg *config.Config) platform.PlatForm {
 	return &gitlabStatistics{
 		token:        cfg.GitLab.RootToken,
 		endpoint:     cfg.GitLab.Endponit,
-		countPerPage: cfg.GitLab.CountPerPage,
+		countPerPage: 50,
 		cli:          utils.NewHttpClient(3),
 	}
 }
@@ -43,11 +43,13 @@ func (impl *gitlabStatistics) getProjectId(pageNum int) (resp []platform.Project
 	url := fmt.Sprintf("%s/projects/?simple=true&per_page=%d&page=%d", impl.endpoint, impl.countPerPage, pageNum)
 	req, err := impl.newRequest(impl.token, url, "GET", nil)
 	if err != nil {
+		fmt.Printf("\"11\": %v\n", "11")
 		return
 	}
 
 	_, err = impl.cli.ForwardTo(req, &resp)
 	if err != nil {
+		fmt.Printf("\"12\": %v\n", "12")
 		return
 	}
 

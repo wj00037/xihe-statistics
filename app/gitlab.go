@@ -47,11 +47,10 @@ func (g *gitLabService) Counts() (dto CloneCountsDTO, err error) {
 		if err != nil {
 			if IsErrorEmptyProjectIdPage(err) {
 				return CloneCountsDTO{
-					Counts:   counts,
+					Counts:   int64(counts / 2),
 					CreateAt: getUnixLocalTime(),
 				}, nil
 			}
-
 			return CloneCountsDTO{}, err
 		}
 

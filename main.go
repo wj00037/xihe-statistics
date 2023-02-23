@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/opensourceways/community-robot-lib/logrusutil"
+	liboptions "github.com/opensourceways/community-robot-lib/options"
 	"github.com/sirupsen/logrus"
 
 	"project/xihe-statistics/config"
@@ -16,41 +17,73 @@ import (
 	"project/xihe-statistics/server"
 )
 
+type options struct {
+	service     liboptions.ServiceOptions
+	enableDebug bool
+}
+
+func (o *options) Validate() error {
+	return o.service.Validate()
+}
+
+func gatherOptions(fs *flag.FlagSet, args ...string) options {
+	var o options
+
+	o.service.AddFlags(fs)
+
+	fs.BoolVar(
+		&o.enableDebug, "enable_debug", false,
+		"whether to enable debug model.",
+	)
+
+	fs.Parse(args)
+	return o
+}
+
 func main() {
 	logrusutil.ComponentInit("xihe-statistics")
 	log := logrus.NewEntry(logrus.StandardLogger())
 
+	o := gatherOptions(
+		flag.NewFlagSet(os.Args[0], flag.ExitOnError),
+		os.Args[1:]...,
+	)
+	if err := o.Validate(); err != nil {
+		logrus.Fatalf("Invalid options, err:%s", err.Error())
+	}
+
+	if o.enableDebug {
+		logrus.SetLevel(logrus.DebugLevel)
+		logrus.Debug("debug enabled.")
+	}
+
 	// cfg
-	var cfg string
-	flag.StringVar(&cfg, "conf", os.Getenv("CONFIG_PATH"), "指定配置文件路径")
-	flag.Parse()
-	// loading config file
-	err := config.Init(cfg)
-	if err != nil {
-		panic(err)
+	cfg := new(config.Config)
+	if err := config.LoadConfig(o.service.ConfigFile, cfg); err != nil {
+		logrus.Fatalf("load config, err:%s", err.Error())
 	}
 
 	// controller
 	controller.Init(log)
 
 	// pgsql
-	if err := pgsql.Initialize(config.Conf.PGSQL); err != nil {
+	if err := pgsql.Initialize(&cfg.PGSQL); err != nil {
 		logrus.Fatalf("initialize pgsql failed, err:%s", err.Error())
 	}
 
 	// init kafka
-	if err := messages.Init(config.Conf.GetMQConfig(), log, config.Conf.Topics); err != nil {
+	if err := messages.Init(cfg.GetMQConfig(), log, cfg.MQ.Topics); err != nil {
 		log.Fatalf("initialize mq failed, err:%v", err)
 	}
 
 	defer messages.Exit(log)
 
 	// mq
-	go messages.Run(messages.NewHandler(config.Conf, log), log)
+	go messages.Run(messages.NewHandler(cfg, log), log)
 
 	// gitlab statisitc
-	go gitlab.Run(gitlab.NewHandler(config.Conf, log), log, config.Conf)
+	go gitlab.Run(gitlab.NewHandler(cfg, log), log, cfg)
 
 	// gin
-	server.StartWebServer(config.Conf.HttpPort, time.Duration(config.Conf.Duration), config.Conf)
+	server.StartWebServer(cfg.HttpPort, time.Duration(cfg.Duration), cfg)
 }
