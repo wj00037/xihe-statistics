@@ -14,13 +14,16 @@ type DownloadRecordService interface {
 
 type downloadRecordService struct {
 	dr repository.DownloadRecord
+	gs repository.Gitlab
 }
 
 func NewDownloadRecordService(
 	dr repository.DownloadRecord,
+	gs repository.Gitlab,
 ) DownloadRecordService {
 	return downloadRecordService{
 		dr: dr,
+		gs: gs,
 	}
 }
 
@@ -32,11 +35,24 @@ func (s downloadRecordService) Add(cmd *DownloadRecordAddCmd) (err error) {
 }
 
 func (s downloadRecordService) Get() (dto DownloadRecordDTO, err error) {
+	// git clone
+	cc, err := s.gs.Get()
+	if err != nil {
+		return
+	}
+
+	// download
 	counts, err := s.dr.Get()
+	if err != nil {
+		return
+	}
+
+	// clone plus download
 	dto = DownloadRecordDTO{
-		Counts:   counts,
+		Counts:   counts + cc.Counts,
 		UpdateAt: getLocalTime(),
 	}
+
 	return
 }
 

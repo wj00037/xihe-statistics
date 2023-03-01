@@ -104,7 +104,7 @@ func setRouter(engine *gin.Engine, cfg *config.Config) {
 		)
 
 		controller.AddRouterForDownloadRecordController(
-			v1, downloadRecord, platform, gitlabRecord,
+			v1, downloadRecord, gitlabRecord, platform, gitlabRecord,
 		)
 
 		controller.AddRouterForTrainRecordController(

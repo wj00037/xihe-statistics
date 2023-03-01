@@ -64,11 +64,15 @@ func NewHandler(cfg *config.Config, log *logrus.Entry) *Handler {
 		pgsql.NewTrainRecordMapper(pgsql.TrainRecord{}),
 	)
 
+	gitlabRecord := repositories.NewGitLabRecordRepository(
+		pgsql.NewGitLabRecordMapper(pgsql.GitLabRecord{}),
+	)
+
 	bs := app.NewBigModelRecordService(bigModelRecord)
 	rs := app.NewRepoRecordService(repoRecord)
 	rr := app.NewRegisterRecordService(registerRecord)
 	fr := app.NewFileUploadRecordService(fileUploadRecord)
-	ds := app.NewDownloadRecordService(downloadRecord)
+	ds := app.NewDownloadRecordService(downloadRecord, gitlabRecord)
 	ts := app.NewTrainRecordService(trainRecord)
 
 	return &Handler{

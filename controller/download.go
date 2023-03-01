@@ -12,11 +12,12 @@ import (
 func AddRouterForDownloadRecordController(
 	rg *gin.RouterGroup,
 	dr repository.DownloadRecord,
+	gs repository.Gitlab,
 	pf platform.PlatForm,
 	gl repository.Gitlab,
 ) {
 	ctl := DownloadRecordController{
-		ds: app.NewDownloadRecordService(dr),
+		ds: app.NewDownloadRecordService(dr, gs),
 		gs: app.NewGitLabService(pf, gl),
 	}
 
@@ -26,6 +27,7 @@ func AddRouterForDownloadRecordController(
 
 type DownloadRecordController struct {
 	baseController
+
 	ds app.DownloadRecordService
 	gs app.GitLabService
 }
