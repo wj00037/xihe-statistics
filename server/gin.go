@@ -73,6 +73,10 @@ func setRouter(engine *gin.Engine, cfg *config.Config) {
 		pgsql.NewTrainRecordMapper(pgsql.TrainRecord{}),
 	)
 
+	cloudRecord := repositories.NewCloudRecordRepository(
+		pgsql.NewCloudRecordMapper(pgsql.CloudRecord{}),
+	)
+
 	gitlabRecord := repositories.NewGitLabRecordRepository(
 		pgsql.NewGitLabRecordMapper(pgsql.GitLabRecord{}),
 	)
@@ -104,11 +108,15 @@ func setRouter(engine *gin.Engine, cfg *config.Config) {
 		)
 
 		controller.AddRouterForDownloadRecordController(
-			v1, downloadRecord, gitlabRecord, platform, gitlabRecord,
+			v1, downloadRecord, gitlabRecord, platform,
 		)
 
 		controller.AddRouterForTrainRecordController(
 			v1, trainRecord,
+		)
+
+		controller.AddRouterForCloudRecordController(
+			v1, cloudRecord,
 		)
 	}
 

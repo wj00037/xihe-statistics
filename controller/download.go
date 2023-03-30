@@ -14,11 +14,10 @@ func AddRouterForDownloadRecordController(
 	dr repository.DownloadRecord,
 	gs repository.Gitlab,
 	pf platform.PlatForm,
-	gl repository.Gitlab,
 ) {
 	ctl := DownloadRecordController{
 		ds: app.NewDownloadRecordService(dr, gs),
-		gs: app.NewGitLabService(pf, gl),
+		gs: app.NewGitLabService(pf, gs),
 	}
 
 	rg.GET("/v1/download", ctl.Get)

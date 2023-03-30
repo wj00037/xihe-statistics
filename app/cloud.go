@@ -7,6 +7,7 @@ import (
 
 type CloudRecordService interface {
 	Add(*CloudRecordCmd) error
+	Get() (CloudRecordDTO, error)
 }
 
 func NewCloudRecodeService(
@@ -30,4 +31,15 @@ func (s *cloudRecordService) Add(cmd *CloudRecordCmd) error {
 			CreateAt: cmd.CreateAt,
 		},
 	)
+}
+
+func (s *cloudRecordService) Get() (dto CloudRecordDTO, err error) {
+	c, err := s.repo.Get()
+	if err != nil {
+		return
+	}
+
+	dto.toCloudRecordDTO(c, getLocalTime())
+
+	return
 }

@@ -22,3 +22,15 @@ func (cmd CloudRecordCmd) Validate() error {
 
 	return nil
 }
+
+type CloudRecordDTO struct {
+	Counts   int64  `json:"counts"`
+	UpdateAt string `json:"update_at"`
+}
+
+func (dto *CloudRecordDTO) toCloudRecordDTO(counts int64, update string) {
+	*dto = CloudRecordDTO{
+		Counts:   counts,
+		UpdateAt: update,
+	}
+}
