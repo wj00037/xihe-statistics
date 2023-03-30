@@ -55,6 +55,16 @@ func (cli *client) count(
 		Count(counts).Error
 }
 
+func (cli *client) distinctCount(
+	ctx context.Context, table interface{},
+	d string, counts *int64,
+) error {
+	return cli.db.WithContext(ctx).
+		Model(table).
+		Distinct(d).
+		Count(counts).Error
+}
+
 func (cli *client) fileUploadUpsert(
 	ctx context.Context, table interface{},
 	data FileUploadRecord,

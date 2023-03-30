@@ -32,9 +32,9 @@ func (m *cloudRecord) AddCloudRecord(do *repositories.CloudRecordDO) (err error)
 
 func (m *cloudRecord) GetCloudRecordCount() (counts int64, err error) {
 	f := func(ctx context.Context) error {
-		return cli.count(
+		return cli.distinctCount(
 			ctx, m.table,
-			&counts,
+			"username", &counts,
 		)
 	}
 
