@@ -64,6 +64,10 @@ func NewHandler(cfg *config.Config, log *logrus.Entry) *Handler {
 		pgsql.NewTrainRecordMapper(pgsql.TrainRecord{}),
 	)
 
+	cloudRecord := repositories.NewCloudRecordRepository(
+		pgsql.NewCloudRecordMapper(pgsql.CloudRecord{}),
+	)
+
 	gitlabRecord := repositories.NewGitLabRecordRepository(
 		pgsql.NewGitLabRecordMapper(pgsql.GitLabRecord{}),
 	)
@@ -74,6 +78,7 @@ func NewHandler(cfg *config.Config, log *logrus.Entry) *Handler {
 	fr := app.NewFileUploadRecordService(fileUploadRecord)
 	ds := app.NewDownloadRecordService(downloadRecord, gitlabRecord)
 	ts := app.NewTrainRecordService(trainRecord)
+	cr := app.NewCloudRecodeService(cloudRecord)
 
 	return &Handler{
 		Log:      log,
@@ -85,6 +90,7 @@ func NewHandler(cfg *config.Config, log *logrus.Entry) *Handler {
 		FileUpload: fr,
 		Download:   ds,
 		Train:      ts,
+		Cloud:      cr,
 	}
 }
 

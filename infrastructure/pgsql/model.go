@@ -75,3 +75,14 @@ type TrainRecord struct {
 func (TrainRecord) TableName() string {
 	return "train_record"
 }
+
+// Cloud
+type CloudRecord struct {
+	UserName string `gorm:"column:username"`
+	CloudId  string `gorm:"column:cloud_id"`
+	CreateAt int64  `gorm:"column:create_at"`
+}
+
+func (CloudRecord) TableName() string {
+	return "cloud_record"
+}

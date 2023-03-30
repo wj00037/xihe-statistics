@@ -33,7 +33,7 @@ type client struct {
 func withContext(f func(context.Context) error) error {
 	ctx, cancel := context.WithTimeout(
 		context.Background(),
-		10*time.Second, // TODO use config
+		10*time.Second,
 	)
 	defer cancel()
 

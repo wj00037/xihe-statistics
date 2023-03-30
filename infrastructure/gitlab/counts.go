@@ -43,13 +43,11 @@ func (impl *gitlabStatistics) getProjectId(pageNum int) (resp []platform.Project
 	url := fmt.Sprintf("%s/projects/?simple=true&per_page=%d&page=%d", impl.endpoint, impl.countPerPage, pageNum)
 	req, err := impl.newRequest(impl.token, url, "GET", nil)
 	if err != nil {
-		fmt.Printf("\"11\": %v\n", "11")
 		return
 	}
 
 	_, err = impl.cli.ForwardTo(req, &resp)
 	if err != nil {
-		fmt.Printf("\"12\": %v\n", "12")
 		return
 	}
 

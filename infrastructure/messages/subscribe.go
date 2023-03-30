@@ -163,6 +163,25 @@ func statisticsDo(handler interface{}, msg *mq.Message) (err error) {
 
 		return h.AddTrainRecord(&tr)
 
+	case "cloud":
+		h, ok := handler.(message.CloudRecordHandler)
+		if !ok {
+			return
+		}
+
+		username, err := domain.NewAccount(body.User)
+		if err != nil {
+			return err
+		}
+
+		c := domain.Cloud{
+			UserName: username,
+			CloudId:  body.Info["cloud_id"],
+			CreateAt: body.When,
+		}
+
+		return h.AddCloudRecord(&c)
+
 	}
 
 	return

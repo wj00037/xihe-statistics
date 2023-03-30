@@ -25,3 +25,7 @@ type DownloadRecordHandler interface {
 type TrainRecordHandler interface {
 	AddTrainRecord(*domain.TrainRecord) error
 }
+
+type CloudRecordHandler interface {
+	AddCloudRecord(d *domain.Cloud) error
+}

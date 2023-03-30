@@ -19,6 +19,7 @@ type Handler struct {
 	FileUpload app.FileUploadRecordService
 	Download   app.DownloadRecordService
 	Train      app.TrainRecordService
+	Cloud      app.CloudRecordService
 }
 
 func (h *Handler) AddBigModelRecord(d *domain.UserWithBigModel) error { // implement domain function with app function
@@ -91,4 +92,18 @@ func (h *Handler) AddTrainRecord(d *domain.TrainRecord) error {
 	}
 
 	return h.Train.Add(&cmd)
+}
+
+func (h *Handler) AddCloudRecord(d *domain.Cloud) error {
+	cmd := app.CloudRecordCmd{
+		User:     d.UserName,
+		CloudId:  d.CloudId,
+		CreateAt: d.CreateAt,
+	}
+
+	if err := cmd.Validate(); err != nil {
+		return err
+	}
+
+	return h.Cloud.Add(&cmd)
 }
