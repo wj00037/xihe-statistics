@@ -4,7 +4,6 @@ import (
 	"errors"
 	"project/xihe-statistics/domain/platform"
 	"project/xihe-statistics/domain/repository"
-	"time"
 )
 
 type GitLabService interface {
@@ -56,7 +55,6 @@ func (g *gitLabService) Counts() (dto CloneCountsDTO, err error) {
 
 		counts += count
 		c++
-		time.Sleep(time.Second)
 	}
 }
 
@@ -75,6 +73,10 @@ func (g *gitLabService) countsPage(pageNum int) (counts int64, err error) {
 	}
 
 	for _, id := range ids {
+		if id.IsAbnormal() {
+			continue
+		}
+
 		total, err := g.pf.GetCloneTotal(id.Id)
 		if err != nil {
 			return 0, err

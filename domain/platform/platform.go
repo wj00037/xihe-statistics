@@ -18,3 +18,7 @@ type PlatForm interface {
 	GetProjectId(int) ([]ProjectId, error)
 	GetCloneTotal(int) (CloneTotal, error)
 }
+
+func (r *ProjectId) IsAbnormal() bool {
+	return r.Id == 2469
+}
