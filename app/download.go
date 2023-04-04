@@ -36,10 +36,10 @@ func (s downloadRecordService) Add(cmd *DownloadRecordAddCmd) (err error) {
 
 func (s downloadRecordService) Get() (dto DownloadRecordDTO, err error) {
 	// git clone
-	// cc, err := s.gs.Get()
-	// if err != nil {
-	// 	return
-	// }
+	cc, err := s.gs.Get()
+	if err != nil {
+		return
+	}
 
 	// download
 	counts, err := s.dr.Get()
@@ -49,7 +49,7 @@ func (s downloadRecordService) Get() (dto DownloadRecordDTO, err error) {
 
 	// clone plus download
 	dto = DownloadRecordDTO{
-		Counts:   counts,
+		Counts:   counts + cc.Counts,
 		UpdateAt: getLocalTime(),
 	}
 
