@@ -74,6 +74,7 @@ func (g *gitLabService) countsPage(pageNum int) (counts int64, err error) {
 
 	for _, id := range ids {
 		if id.IsAbnormal() {
+			counts += 2200
 			continue
 		}
 
