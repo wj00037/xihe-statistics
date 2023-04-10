@@ -20,5 +20,11 @@ type PlatForm interface {
 }
 
 func (r *ProjectId) IsAbnormal() bool {
-	return r.Id == 2469
+	for _, v := range [...]int{2469, 2599, 2598, 2597} {
+		if v == r.Id {
+			return true
+		}
+	}
+
+	return false
 }
