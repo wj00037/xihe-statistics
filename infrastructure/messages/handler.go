@@ -24,11 +24,9 @@ type Handler struct {
 
 func (h *Handler) AddBigModelRecord(d *domain.UserWithBigModel) error { // implement domain function with app function
 	cmd := app.UserWithBigModelAddCmd{
-		UserWithBigModel: *d,
-	}
-
-	if err := cmd.Validate(); err != nil {
-		return err
+		UserName: d.UserName,
+		BigModel: d.BigModel,
+		CreatAt:  d.CreateAt,
 	}
 
 	return h.BigModel.AddUserWithBigModel(&cmd)

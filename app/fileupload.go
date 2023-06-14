@@ -52,7 +52,7 @@ func (cmd FileUploadRecordAddCmd) toFileUploadRecord(
 ) {
 	var createAt int64
 	if createAt = cmd.CreateAt; cmd.CreateAt == 0 {
-		createAt = getUnixLocalTime()
+		createAt = GetUnixLocalTime()
 	}
 	*d = domain.FileUploadRecord{
 		UserName:   cmd.UserName,

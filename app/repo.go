@@ -65,7 +65,7 @@ func (cmd RepoRecordAddCmd) Validate() error {
 func (cmd RepoRecordAddCmd) toRepo(ur *domain.UserWithRepo) {
 	var createAt int64
 	if createAt = cmd.CreateAt; cmd.CreateAt == 0 {
-		createAt = getUnixLocalTime()
+		createAt = GetUnixLocalTime()
 	}
 
 	*ur = domain.UserWithRepo{

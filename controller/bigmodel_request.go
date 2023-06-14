@@ -20,6 +20,10 @@ func (req *BigModelCreateRequest) toCmd() (cmd app.UserWithBigModelAddCmd, err e
 		return
 	}
 
+	if cmd.CreatAt == 0 {
+		cmd.CreatAt = app.GetUnixLocalTime()
+	}
+
 	return
 }
 
