@@ -15,6 +15,10 @@ import (
 	"project/xihe-statistics/domain/message"
 )
 
+const (
+	accountUnkown = "unknown"
+)
+
 var topics config.Topics
 
 func Subscribe(ctx context.Context, handler interface{}, log *logrus.Entry) error {
@@ -130,6 +134,9 @@ func statisticsDo(handler interface{}, msg *mq.Message) (err error) {
 			return
 		}
 
+		if body.User == "" {
+			body.User = accountUnkown
+		}
 		username, err := domain.NewAccount(body.User)
 		if err != nil {
 			return err
