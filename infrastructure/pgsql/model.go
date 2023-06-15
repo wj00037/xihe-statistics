@@ -86,3 +86,13 @@ type CloudRecord struct {
 func (CloudRecord) TableName() string {
 	return "cloud_record"
 }
+
+// Media
+type Media struct {
+	Name     string `gorm:"column:name"`
+	CreateAt int64  `gorm:"create_at"`
+}
+
+func (Media) TableName() string {
+	return "media_record"
+}

@@ -99,6 +99,17 @@ func (cli *client) whereCount(
 		Count(counts).Error
 }
 
+func (cli *client) whereCount2(
+	ctx context.Context, table interface{},
+	condition string, v1 interface{},
+	counts *int64,
+) error {
+	return cli.db.WithContext(ctx).
+		Model(table).
+		Where(condition, v1).
+		Count(counts).Error
+}
+
 func (cli *client) getLast(
 	ctx context.Context, table interface{},
 	result interface{},

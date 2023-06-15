@@ -81,6 +81,10 @@ func setRouter(engine *gin.Engine, cfg *config.Config) {
 		pgsql.NewGitLabRecordMapper(pgsql.GitLabRecord{}),
 	)
 
+	mediaRecord := repositories.NewMediaRepository(
+		pgsql.NewMediaMapper(pgsql.Media{}),
+	)
+
 	platform := gitlab.NewGitlabStatistics(cfg)
 
 	// controller -> gin
@@ -117,6 +121,10 @@ func setRouter(engine *gin.Engine, cfg *config.Config) {
 
 		controller.AddRouterForCloudRecordController(
 			v1, cloudRecord,
+		)
+
+		controller.AddRouterForMediaController(
+			v1, mediaRecord,
 		)
 	}
 
