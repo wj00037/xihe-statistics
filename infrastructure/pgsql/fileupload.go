@@ -31,8 +31,12 @@ func (m fileUploadRecord) GetUsers() (
 		return
 	}
 
+	u, err := toArryString(users)
+	if err != nil {
+		return
+	}
 	do = repositories.FileUploadUserCountsDO{
-		Users: toArryString(users),
+		Users: u,
 	}
 
 	return

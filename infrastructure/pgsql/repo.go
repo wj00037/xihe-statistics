@@ -2,6 +2,7 @@ package pgsql
 
 import (
 	"context"
+	"errors"
 
 	"project/xihe-statistics/infrastructure/repositories"
 )
@@ -56,7 +57,9 @@ func (m userWithRepo) Get() (
 		return
 	}
 
-	m.toRepoRecordsDO(records, &r)
+	if err = m.toRepoRecordsDO(records, &r); err != nil {
+		return
+	}
 
 	return
 }
@@ -71,19 +74,28 @@ func (m userWithRepo) toUserWithRepoCol(u repositories.UserWithRepoDO) (UserWith
 	return colObj, nil
 }
 
-func (m userWithRepo) toRepoRecordsDO(u []interface{}, do *repositories.RepoRecordsDO) {
-	users := toArryString(u)
+func (m userWithRepo) toRepoRecordsDO(u []interface{}, do *repositories.RepoRecordsDO) error {
+	users, err := toArryString(u)
+	if err != nil {
+		return err
+	}
+
 	*do = repositories.RepoRecordsDO{
 		Users:  users,
 		Counts: len(users),
 	}
+
+	return nil
 }
 
-func toArryString(ar []interface{}) []string {
+func toArryString(ar []interface{}) ([]string, error) {
 	arryString := make([]string, len(ar))
 
+	var ok bool
 	for j, v := range ar {
-		arryString[j] = v.(string)
+		if arryString[j], ok = v.(string); !ok {
+			return nil, errors.New("assertion error")
+		}
 	}
-	return arryString
+	return arryString, nil
 }
