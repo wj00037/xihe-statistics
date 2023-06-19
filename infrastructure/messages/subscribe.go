@@ -221,7 +221,11 @@ func gitLabDo(
 	creatAt := body.Commits[0].TimeStamp
 
 	// tranfer time to unix time.
-	local, _ := time.LoadLocation("Asia/Shanghai")
+	local, err := time.LoadLocation("Asia/Shanghai")
+	if err != nil {
+		return
+	}
+
 	stamp, err := time.ParseInLocation("2006-01-02T15:04:05+08:00", creatAt, local)
 	if err != nil {
 		return

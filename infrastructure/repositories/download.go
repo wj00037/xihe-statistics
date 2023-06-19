@@ -23,7 +23,8 @@ func (impl downloadRecord) Get() (count int64, err error) {
 }
 
 func (impl downloadRecord) Add(dr *domain.DownloadRecord) (err error) {
-	do, _ := impl.toDownloadRecordDO(dr)
+	do := impl.toDownloadRecordDO(dr)
+
 	return impl.mapper.AddDownloadRecord(do)
 }
 
@@ -33,15 +34,10 @@ type DownloadRecordDO struct {
 	CreateAt     int64
 }
 
-func (impl downloadRecord) toDownloadRecordDO(dr *domain.DownloadRecord) (
-	do DownloadRecordDO,
-	err error,
-) {
-	do = DownloadRecordDO{
+func (impl downloadRecord) toDownloadRecordDO(dr *domain.DownloadRecord) DownloadRecordDO {
+	return DownloadRecordDO{
 		UserName:     dr.UserName.Account(),
 		DownloadPath: dr.DownloadPath,
 		CreateAt:     dr.CreateAt,
 	}
-
-	return
 }

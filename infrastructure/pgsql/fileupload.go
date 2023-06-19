@@ -42,7 +42,7 @@ func (m fileUploadRecord) AddRecord(
 	do repositories.FileUploadRecordDO,
 ) (err error) {
 
-	data, _ := m.toFileUploadCol(do)
+	data := m.toFileUploadCol(do)
 
 	f := func(ctx context.Context) error {
 		return cli.fileUploadUpsert(
@@ -60,12 +60,10 @@ func (m fileUploadRecord) AddRecord(
 
 func (m fileUploadRecord) toFileUploadCol(
 	do repositories.FileUploadRecordDO,
-) (FileUploadRecord, error) {
-	colObj := FileUploadRecord{
+) FileUploadRecord {
+	return FileUploadRecord{
 		UserName:   do.UserName,
 		UploadPath: do.UploadPath,
 		CreateAt:   do.CreateAt,
 	}
-
-	return colObj, nil
 }

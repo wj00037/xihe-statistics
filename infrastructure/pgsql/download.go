@@ -30,7 +30,7 @@ func (m downloadRecord) GetDownloadCount() (count int64, err error) {
 
 func (m downloadRecord) AddDownloadRecord(do repositories.DownloadRecordDO) (err error) {
 
-	col, _ := m.toDownloadRecordCol(do)
+	col := m.toDownloadRecordCol(do)
 
 	f := func(ctx context.Context) error {
 		return cli.create(
@@ -50,7 +50,6 @@ func (m downloadRecord) toDownloadRecordCol(
 	do repositories.DownloadRecordDO,
 ) (
 	col DownloadRecord,
-	err error,
 ) {
 	col = DownloadRecord{
 		UserName:     do.UserName,

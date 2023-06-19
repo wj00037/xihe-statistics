@@ -36,6 +36,10 @@ func (impl userWithRepo) Add(u *domain.UserWithRepo) error {
 
 func (impl userWithRepo) Get() (r repository.RepoRecords, err error) {
 	do, err := impl.mapper.Get()
+	if err != nil {
+		return
+	}
+
 	r = impl.toRepoRecord(do)
 	return
 }

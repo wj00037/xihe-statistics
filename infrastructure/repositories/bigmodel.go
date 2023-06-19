@@ -32,13 +32,15 @@ func (impl bigmodel) Add(d *domain.UserWithBigModel) error {
 
 func (impl bigmodel) Get(d domain.BigModel) (ds []domain.UserWithBigModel, err error) {
 	dos, err := impl.mapper.Get(d.BigModel())
+	if err != nil {
+		return
+	}
 
 	ds = make([]domain.UserWithBigModel, len(dos))
 	for j := range dos {
-		dos[j].toBigModel(&ds[j])
-	}
-	if err != nil {
-		return
+		if err = dos[j].toBigModel(&ds[j]); err != nil {
+			return
+		}
 	}
 
 	return
@@ -50,13 +52,15 @@ func (impl bigmodel) GetByTypeAndTime(d domain.BigModel, time int64) (int64, err
 
 func (impl bigmodel) GetAll() (ds []domain.UserWithBigModel, err error) {
 	dos, err := impl.mapper.GetAll()
+	if err != nil {
+		return
+	}
 
 	ds = make([]domain.UserWithBigModel, len(dos))
 	for j := range dos {
-		dos[j].toBigModel(&ds[j])
-	}
-	if err != nil {
-		return
+		if err = dos[j].toBigModel(&ds[j]); err != nil {
+			return
+		}
 	}
 
 	return

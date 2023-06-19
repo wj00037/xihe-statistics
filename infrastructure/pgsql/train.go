@@ -49,7 +49,7 @@ func (m trainRecord) GetTrains(startTime int64, endTime int64) (counts int64, er
 
 func (m trainRecord) Add(do repositories.TrainRecordDO) (err error) {
 
-	col, _ := m.toTrainRecordCol(do)
+	col := m.toTrainRecordCol(do)
 
 	f := func(ctx context.Context) error {
 		return cli.create(
@@ -67,13 +67,11 @@ func (m trainRecord) Add(do repositories.TrainRecordDO) (err error) {
 
 func (m trainRecord) toTrainRecordCol(
 	do repositories.TrainRecordDO,
-) (TrainRecord, error) {
-	col := TrainRecord{
+) TrainRecord {
+	return TrainRecord{
 		UserName:  do.UserName,
 		ProjectId: do.ProjectId,
 		TrainId:   do.TrainId,
 		CreateAt:  do.CreateAt,
 	}
-
-	return col, nil
 }
