@@ -80,6 +80,7 @@ func (h *Handler) AddDownloadRecord(d *domain.DownloadRecord) error {
 	return h.Download.Add(&cmd)
 }
 
+// training
 func (h *Handler) AddTrainRecord(d *domain.TrainRecord) error {
 	cmd := app.TrainRecordAddCmd{
 		TrainRecord: *d,

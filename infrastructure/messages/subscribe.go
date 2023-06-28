@@ -3,6 +3,7 @@ package messages
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 
@@ -32,8 +33,17 @@ func Subscribe(ctx context.Context, handler interface{}, log *logrus.Entry) erro
 		}
 	}()
 
+	// training
+	s, err := registerHandlerForTraining(handler)
+	if err != nil {
+		return err
+	}
+	if s != nil {
+		subscribers[s.Topic()] = s
+	}
+
 	// register statistics
-	s, err := registerHandlerForStatistics(handler)
+	s, err = registerHandlerForStatistics(handler)
 	if err != nil {
 		return err
 	}
@@ -150,26 +160,6 @@ func statisticsDo(handler interface{}, msg *mq.Message) (err error) {
 
 		return h.AddDownloadRecord(&dr)
 
-	case "training":
-		h, ok := handler.(message.TrainRecordHandler)
-		if !ok {
-			return
-		}
-
-		username, err := domain.NewAccount(body.User)
-		if err != nil {
-			return err
-		}
-
-		tr := domain.TrainRecord{
-			UserName:  username,
-			ProjectId: body.Info["project_id"],
-			TrainId:   body.Info["id"],
-			CreateAt:  body.When,
-		}
-
-		return h.AddTrainRecord(&tr)
-
 	case "cloud":
 		h, ok := handler.(message.CloudRecordHandler)
 		if !ok {
@@ -239,6 +229,43 @@ func gitLabDo(
 	}
 
 	return handler.AddUploadFileRecord(&fr)
+}
+
+// train
+func registerHandlerForTraining(handler interface{}) (mq.Subscriber, error) {
+	h, ok := handler.(message.TrainRecordHandler)
+	if !ok {
+		return nil, nil
+	}
+
+	return kafka.Subscribe(topics.Training, func(e mq.Event) (err error) {
+		msg := e.Message()
+		if msg == nil {
+			return
+		}
+
+		body := MsgNormal{}
+		if err = json.Unmarshal(msg.Body, &body); err != nil {
+			return
+		}
+
+		if body.Details["project_id"] == "" || body.Details["training_id"] == "" {
+			err = errors.New("invalid message of training")
+
+			return
+		}
+
+		v := domain.TrainRecord{}
+		if v.UserName, err = domain.NewAccount(body.User); err != nil {
+			return
+		}
+
+		v.ProjectId = body.Details["project_id"]
+		v.TrainId = body.Details["training_id"]
+		v.CreateAt = body.CreatedAt
+
+		return h.AddTrainRecord(&v)
+	})
 }
 
 func registerHandlerForStatistics(handler interface{}) (mq.Subscriber, error) {
