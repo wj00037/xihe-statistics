@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/opensourceways/community-robot-lib/kafka"
@@ -79,8 +78,6 @@ func statisticsDo(handler interface{}, msg *mq.Message) (err error) {
 	if err = json.Unmarshal(msg.Body, &body); err != nil {
 		return
 	}
-
-	fmt.Printf("body: %v\n", body)
 
 	switch body.Type {
 	case "bigmodel":
@@ -196,8 +193,6 @@ func gitLabDo(
 	if err = json.Unmarshal(msg.Body, &body); err != nil {
 		return
 	}
-
-	fmt.Printf("body: %v\n", body)
 
 	if body.ObjectKind != "push" {
 		return
