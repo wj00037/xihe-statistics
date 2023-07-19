@@ -7,13 +7,13 @@ import (
 	"time"
 
 	"github.com/opensourceways/community-robot-lib/mq"
-	"github.com/opensourceways/community-robot-lib/utils"
+	xiheutils "github.com/opensourceways/xihe-server/utils"
 )
 
 var reIpPort = regexp.MustCompile(`^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}:[1-9][0-9]*$`)
 
 func LoadConfig(path string, cfg interface{}) error {
-	if err := utils.LoadFromYaml(path, cfg); err != nil {
+	if err := xiheutils.LoadFromYaml(path, cfg); err != nil {
 		return err
 	}
 
