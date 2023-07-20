@@ -17,7 +17,6 @@ func AddRouterForBigModelRecordController(
 		bs: app.NewBigModelRecordService(ub),
 	}
 
-	rg.POST("/v1/d1/bigmodel", ctl.AddBigModel)
 	rg.GET("/v1/d1/bigmodel/:bigmodel", ctl.Get)
 	rg.POST("/v1/d1/bigmodel/increase", ctl.GetIncrease)
 	rg.GET("/v1/d1/bigmodel", ctl.GetAll)
@@ -27,39 +26,6 @@ func AddRouterForBigModelRecordController(
 type BigModelRecordController struct {
 	baseController
 	bs app.BigModelRecordService
-}
-
-// @Summary Add
-// @Description add user query bigmodel record
-// @Tags  D1
-// @Param  body  body  BigModelCreateRequest  true  "body of bigmodel records"
-// @Accept json
-// @Success 200 {object}
-// @Produce json
-// @Router /v1/d1/bigmodel [post]
-func (ctl *BigModelRecordController) AddBigModel(ctx *gin.Context) {
-	req := BigModelCreateRequest{}
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, respBadRequestBody)
-		return
-	}
-
-	cmd, err := req.toCmd()
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, newResponseCodeError(
-			errorBadRequestParam, err,
-		))
-		return
-	}
-
-	err = ctl.bs.AddUserWithBigModel(&cmd)
-	if err != nil {
-		ctl.sendRespWithInternalError(ctx, newResponseError(err))
-
-		return
-	}
-
-	ctx.JSON(http.StatusOK, newResponseData("success"))
 }
 
 // @Summary Get
