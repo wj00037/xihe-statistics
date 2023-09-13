@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/opensourceways/community-robot-lib/mq"
 	"github.com/opensourceways/community-robot-lib/utils"
+	"github.com/opensourceways/kafka-lib/agent"
 )
 
 var reIpPort = regexp.MustCompile(`^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}:[1-9][0-9]*$`)
@@ -26,7 +26,9 @@ type Config struct {
 	Duration int    `json:"duration"`
 	PGSQL    PGSQL  `json:"pgsql"`
 	MQ       MQ     `json:"mq"`
-	GitLab   GitLab `json:"gitlab"`
+	MQTopics Topics `json:"mq_topics"    required:"true"`
+
+	GitLab GitLab `json:"gitlab"`
 }
 
 type PGSQL struct {
@@ -38,9 +40,8 @@ type PGSQL struct {
 }
 
 type MQ struct {
-	Address  string `json:"address"`
-	MaxRetry int    `json:"max_retry"`
-	Topics   `json:"topics"`
+	Address string `json:"address" required:"true"`
+	Version string `json:"version"`
 }
 
 type GitLab struct {
@@ -69,9 +70,10 @@ type Topics struct {
 	BigModel        string `json:"bigmodel"         required:"true"`
 }
 
-func (cfg *Config) GetMQConfig() mq.MQConfig {
-	return mq.MQConfig{
-		Addresses: cfg.MQ.ParseAddress(),
+func (cfg *Config) GetKfkConfig() agent.Config {
+	return agent.Config{
+		Address: cfg.MQ.Address,
+		Version: cfg.MQ.Version,
 	}
 }
 

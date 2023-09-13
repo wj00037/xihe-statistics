@@ -6,8 +6,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/opensourceways/community-robot-lib/kafka"
-	"github.com/opensourceways/community-robot-lib/mq"
+	kafka "github.com/opensourceways/kafka-lib/agent"
 	"github.com/sirupsen/logrus"
 
 	"project/xihe-statistics/config"
@@ -17,51 +16,29 @@ import (
 
 const (
 	accountUnkown = "unknown"
+	group         = "xihe-statistics"
+	retry         = 3
 )
 
 var topics config.Topics
 
 func Subscribe(ctx context.Context, handler interface{}, log *logrus.Entry) error {
-	subscribers := make(map[string]mq.Subscriber)
-
-	defer func() {
-		for k, s := range subscribers {
-			if err := s.Unsubscribe(); err != nil {
-				log.Errorf("failed to unsubscribe for topic:%s, err:%v", k, err)
-			}
-		}
-	}()
-
 	// training
-	s, err := registerHandlerForTraining(handler)
+	err := registerHandlerForTraining(handler)
 	if err != nil {
 		return err
-	}
-	if s != nil {
-		subscribers[s.Topic()] = s
 	}
 
 	// register statistics
-	s, err = registerHandlerForStatistics(handler)
+	err = registerHandlerForStatistics(handler)
 	if err != nil {
 		return err
-	}
-	if s != nil {
-		subscribers[s.Topic()] = s
 	}
 
 	// register gitlab statistics
-	s, err = registerHandlerForGitLab(handler)
+	err = registerHandlerForGitLab(handler)
 	if err != nil {
 		return err
-	}
-	if s != nil {
-		subscribers[s.Topic()] = s
-	}
-
-	// register end
-	if len(subscribers) == 0 {
-		return nil
 	}
 
 	<-ctx.Done()
@@ -69,13 +46,13 @@ func Subscribe(ctx context.Context, handler interface{}, log *logrus.Entry) erro
 	return nil
 }
 
-func statisticsDo(handler interface{}, msg *mq.Message) (err error) {
-	if msg == nil {
+func statisticsDo(handler interface{}, b []byte) (err error) {
+	if len(b) == 0 {
 		return
 	}
 
 	body := msgStatistics{}
-	if err = json.Unmarshal(msg.Body, &body); err != nil {
+	if err = json.Unmarshal(b, &body); err != nil {
 		return
 	}
 
@@ -183,14 +160,14 @@ func statisticsDo(handler interface{}, msg *mq.Message) (err error) {
 
 func gitLabDo(
 	handler message.FileUploadRecordHandler,
-	msg *mq.Message,
+	b []byte,
 ) (err error) {
-	if msg == nil {
+	if len(b) == 0 {
 		return
 	}
 
 	body := msgGitLab{}
-	if err = json.Unmarshal(msg.Body, &body); err != nil {
+	if err = json.Unmarshal(b, &body); err != nil {
 		return
 	}
 
@@ -226,21 +203,24 @@ func gitLabDo(
 	return handler.AddUploadFileRecord(&fr)
 }
 
+func subscribe(topic string, handler kafka.Handler) error {
+	return kafka.SubscribeWithStrategyOfRetry(group, handler, []string{topic}, retry)
+}
+
 // train
-func registerHandlerForTraining(handler interface{}) (mq.Subscriber, error) {
+func registerHandlerForTraining(handler interface{}) error {
 	h, ok := handler.(message.TrainRecordHandler)
 	if !ok {
-		return nil, nil
+		return nil
 	}
 
-	return kafka.Subscribe(topics.Training, func(e mq.Event) (err error) {
-		msg := e.Message()
-		if msg == nil {
+	return subscribe(topics.Training, func(b []byte, m map[string]string) (err error) {
+		if len(b) == 0 {
 			return
 		}
 
 		body := MsgNormal{}
-		if err = json.Unmarshal(msg.Body, &body); err != nil {
+		if err = json.Unmarshal(b, &body); err != nil {
 			return
 		}
 
@@ -263,19 +243,26 @@ func registerHandlerForTraining(handler interface{}) (mq.Subscriber, error) {
 	})
 }
 
-func registerHandlerForStatistics(handler interface{}) (mq.Subscriber, error) {
-	return kafka.Subscribe(topics.Statistics, func(e mq.Event) (err error) {
-		return statisticsDo(handler, e.Message())
+func registerHandlerForStatistics(handler interface{}) error {
+	err := subscribe(topics.Statistics, func(b []byte, m map[string]string) (err error) {
+		return statisticsDo(handler, b)
+	})
+	if err != nil {
+		return err
+	}
+
+	return subscribe(topics.Cloud, func(b []byte, m map[string]string) (err error) {
+		return statisticsDo(handler, b)
 	})
 }
 
-func registerHandlerForGitLab(handler interface{}) (mq.Subscriber, error) {
+func registerHandlerForGitLab(handler interface{}) error {
 	h, ok := handler.(message.FileUploadRecordHandler)
 	if !ok {
-		return nil, nil
+		return nil
 	}
 
-	return kafka.Subscribe(topics.GitLab, func(e mq.Event) error {
-		return gitLabDo(h, e.Message())
+	return subscribe(topics.GitLab, func(b []byte, m map[string]string) error {
+		return gitLabDo(h, b)
 	})
 }

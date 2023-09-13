@@ -7,8 +7,7 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/opensourceways/community-robot-lib/kafka"
-	"github.com/opensourceways/community-robot-lib/mq"
+	kfklib "github.com/opensourceways/kafka-lib/agent"
 	"github.com/sirupsen/logrus"
 
 	"project/xihe-statistics/app"
@@ -17,24 +16,14 @@ import (
 	"project/xihe-statistics/infrastructure/repositories"
 )
 
-func Init(cfg mq.MQConfig, log *logrus.Entry, topic config.Topics) error {
+func Init(cfg kfklib.Config, log *logrus.Entry, topic config.Topics) error {
 	topics = topic
 
-	err := kafka.Init(
-		mq.Addresses(cfg.Addresses...),
-		mq.Log(log),
-	)
-	if err != nil {
-		return err
-	}
-
-	return kafka.Connect()
+	return kfklib.Init(&cfg, log, nil, "")
 }
 
 func Exit(log *logrus.Entry) {
-	if err := kafka.Disconnect(); err != nil {
-		log.Errorf("exit kafka, err:%v", err)
-	}
+	kfklib.Exit()
 }
 
 func NewHandler(cfg *config.Config, log *logrus.Entry) *Handler {
@@ -81,8 +70,7 @@ func NewHandler(cfg *config.Config, log *logrus.Entry) *Handler {
 	cr := app.NewCloudRecodeService(cloudRecord)
 
 	return &Handler{
-		Log:      log,
-		MaxRetry: cfg.MQ.MaxRetry,
+		Log: log,
 
 		BigModel:   bs,
 		Repo:       rs,

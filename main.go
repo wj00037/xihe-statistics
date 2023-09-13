@@ -77,7 +77,7 @@ func main() {
 	}
 
 	// init kafka
-	if err := messages.Init(cfg.GetMQConfig(), log, cfg.MQ.Topics); err != nil {
+	if err := messages.Init(cfg.GetKfkConfig(), log, cfg.MQTopics); err != nil {
 		log.Fatalf("initialize mq failed, err:%v", err)
 	}
 

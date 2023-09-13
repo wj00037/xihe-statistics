@@ -10,7 +10,6 @@ import (
 type Handler struct {
 	Log *logrus.Entry
 
-	MaxRetry         int
 	TrainingEndpoint string
 
 	BigModel   app.BigModelRecordService
