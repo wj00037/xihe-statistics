@@ -18,6 +18,8 @@ const (
 	accountUnkown = "unknown"
 	group         = "xihe-statistics"
 	retry         = 3
+
+	bigModelType = "bigmodel_type"
 )
 
 var topics config.Topics
@@ -42,7 +44,7 @@ func Subscribe(ctx context.Context, handler interface{}, log *logrus.Entry) erro
 	}
 
 	// register bigmdoel access
-	if err = registerHandlerForBigModelAccessLog(handler); err != nil {
+	if err = registerHandlerForBigModelStarted(handler); err != nil {
 		return err
 	}
 
@@ -254,13 +256,13 @@ func registerHandlerForGitLab(handler interface{}) error {
 	})
 }
 
-func registerHandlerForBigModelAccessLog(handler interface{}) error {
+func registerHandlerForBigModelStarted(handler interface{}) error {
 	h, ok := handler.(message.BigModelRecordHandler)
 	if !ok {
 		return errors.New("handler assert error")
 	}
 
-	return subscribe(topics.BigModelAccessLog, func(b []byte, m map[string]string) (err error) {
+	return subscribe(topics.BigModelStarted, func(b []byte, m map[string]string) (err error) {
 		body := MsgNormal{}
 		if err = json.Unmarshal(b, &body); err != nil {
 			return
@@ -268,7 +270,7 @@ func registerHandlerForBigModelAccessLog(handler interface{}) error {
 
 		bmr := domain.UserWithBigModel{}
 
-		if bmr.BigModel, err = domain.NewBigModel(body.Details["bigmodel_type"]); err != nil {
+		if bmr.BigModel, err = domain.NewBigModel(body.Details[bigModelType]); err != nil {
 			return
 		}
 		if bmr.UserName, err = domain.NewAccount(body.User); err != nil {

@@ -52,11 +52,11 @@ type GitLab struct {
 }
 
 type Topics struct {
-	Statistics        string `json:"statistics"          required:"true"`
-	GitLab            string `json:"gitlab"              required:"true"`
-	Training          string `json:"training"            required:"true"`
-	Cloud             string `json:"cloud"               required:"true"`
-	BigModelAccessLog string `json:"bigmodel_access_log" required:"true"`
+	Statistics      string `json:"statistics"          required:"true"`
+	GitLab          string `json:"gitlab"              required:"true"`
+	Training        string `json:"training"            required:"true"`
+	Cloud           string `json:"cloud"               required:"true"`
+	BigModelStarted string `json:"bigmodel_started"    required:"true"`
 }
 
 func (cfg *Config) GetKfkConfig() agent.Config {
