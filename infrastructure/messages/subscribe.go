@@ -41,6 +41,11 @@ func Subscribe(ctx context.Context, handler interface{}, log *logrus.Entry) erro
 		return err
 	}
 
+	// register bigmdoel access
+	if err = registerHandlerForBigModelAccessLog(handler); err != nil {
+		return err
+	}
+
 	<-ctx.Done()
 
 	return nil
@@ -57,24 +62,6 @@ func statisticsDo(handler interface{}, b []byte) (err error) {
 	}
 
 	switch body.Type {
-	case "bigmodel":
-		h, ok := handler.(message.BigModelRecordHandler)
-		if !ok {
-			return
-		}
-
-		bmr := domain.UserWithBigModel{}
-
-		if bmr.BigModel, err = domain.NewBigModel(body.Info["bigmodel"]); err != nil {
-			return
-		}
-		if bmr.UserName, err = domain.NewAccount(body.User); err != nil {
-			return
-		}
-		bmr.CreateAt = body.When
-
-		return h.AddBigModelRecord(&bmr)
-
 	case "resource":
 		h, ok := handler.(message.RepoRecordHandler)
 		if !ok {
@@ -264,5 +251,31 @@ func registerHandlerForGitLab(handler interface{}) error {
 
 	return subscribe(topics.GitLab, func(b []byte, m map[string]string) error {
 		return gitLabDo(h, b)
+	})
+}
+
+func registerHandlerForBigModelAccessLog(handler interface{}) error {
+	h, ok := handler.(message.BigModelRecordHandler)
+	if !ok {
+		return errors.New("handler assert error")
+	}
+
+	return subscribe(topics.BigModelAccessLog, func(b []byte, m map[string]string) (err error) {
+		body := MsgNormal{}
+		if err = json.Unmarshal(b, &body); err != nil {
+			return
+		}
+
+		bmr := domain.UserWithBigModel{}
+
+		if bmr.BigModel, err = domain.NewBigModel(body.Details["bigmodel_type"]); err != nil {
+			return
+		}
+		if bmr.UserName, err = domain.NewAccount(body.User); err != nil {
+			return
+		}
+		bmr.CreateAt = body.CreatedAt
+
+		return h.AddBigModelRecord(&bmr)
 	})
 }
