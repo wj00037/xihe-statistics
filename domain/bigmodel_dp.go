@@ -4,13 +4,14 @@ import (
 	"errors"
 )
 
-func GetBigModelTypeList() []string {
-	return []string{"vqa", "gen_picture",
+var (
+	BigModelTypes = [...]string{
+		"vqa", "gen_picture",
 		"desc_picture", "luojia", "pangu",
 		"codegeex", "wukong", "ai_detector",
-		"baichuan",
+		"baichuan", "glm2",
 	}
-}
+)
 
 // BigModel
 type BigModel interface {
@@ -30,17 +31,13 @@ func NewBigModel(t string) (BigModel, error) {
 }
 
 func isBigModelType(t string) bool {
-	bigModelTypeList := GetBigModelTypeList()
-	for j, bt := range bigModelTypeList {
-		if t == bt {
-			break
-		}
-		if j == len(bigModelTypeList)-1 {
-			return false
+	for i := range BigModelTypes {
+		if t == BigModelTypes[i] {
+			return true
 		}
 	}
 
-	return true
+	return false
 }
 
 type bigModel string

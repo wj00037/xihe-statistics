@@ -106,7 +106,7 @@ func (b bigModelRecordService) GetBigModelRecordAll() (dto BigModelAllDTO, err e
 		usersAll []string
 	)
 
-	for _, bigmodelType := range domain.GetBigModelTypeList() {
+	for _, bigmodelType := range domain.BigModelTypes {
 
 		bigmodel, err = domain.NewBigModel(bigmodelType)
 		if err != nil {
