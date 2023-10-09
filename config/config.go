@@ -2,18 +2,28 @@ package config
 
 import (
 	"errors"
+	"os"
 	"regexp"
 	"strings"
 	"time"
 
-	"github.com/opensourceways/community-robot-lib/utils"
 	"github.com/opensourceways/kafka-lib/agent"
+	"gopkg.in/yaml.v2"
 )
 
 var reIpPort = regexp.MustCompile(`^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}:[1-9][0-9]*$`)
 
+func LoadFromYaml(path string, cfg interface{}) error {
+	b, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+
+	return yaml.Unmarshal(b, cfg)
+}
+
 func LoadConfig(path string, cfg interface{}) error {
-	if err := utils.LoadFromYaml(path, cfg); err != nil {
+	if err := LoadFromYaml(path, cfg); err != nil {
 		return err
 	}
 
