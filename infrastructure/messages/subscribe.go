@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"time"
 
 	kafka "github.com/opensourceways/kafka-lib/agent"
 	"github.com/sirupsen/logrus"
@@ -12,6 +11,7 @@ import (
 	"project/xihe-statistics/config"
 	"project/xihe-statistics/domain"
 	"project/xihe-statistics/domain/message"
+	"project/xihe-statistics/utils"
 )
 
 const (
@@ -169,24 +169,19 @@ func gitLabDo(
 		return
 	}
 	uploadPath := body.UserName + "/" + body.Project.Name
-	creatAt := body.Commits[0].TimeStamp
-
-	// tranfer time to unix time.
-	local, err := time.LoadLocation("Asia/Shanghai")
-	if err != nil {
+	if len(body.Commits) < 1 {
 		return
 	}
 
-	stamp, err := time.ParseInLocation("2006-01-02T15:04:05+08:00", creatAt, local)
+	createdAtUnix, err := utils.TimeStampToUnixTime(body.Commits[0].TimeStamp)
 	if err != nil {
 		return
 	}
-	creatAtUnix := stamp.Unix()
 
 	fr := domain.FileUploadRecord{
 		UserName:   username,
 		UploadPath: uploadPath,
-		CreateAt:   creatAtUnix,
+		CreateAt:   createdAtUnix,
 	}
 
 	return handler.AddUploadFileRecord(&fr)
