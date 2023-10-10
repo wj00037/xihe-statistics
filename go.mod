@@ -10,9 +10,9 @@ require (
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.0
 	github.com/swaggo/swag v1.16.2
-	gopkg.in/yaml.v2 v2.4.0
 	gorm.io/driver/postgres v1.5.2
 	gorm.io/gorm v1.25.4
+	sigs.k8s.io/yaml v1.3.0
 )
 
 require (
@@ -73,7 +73,7 @@ require (
 	golang.org/x/text v0.12.0 // indirect
 	golang.org/x/tools v0.7.0 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	k8s.io/apimachinery v0.26.1 // indirect
-	sigs.k8s.io/yaml v1.3.0 // indirect
 )

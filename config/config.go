@@ -7,8 +7,9 @@ import (
 	"strings"
 	"time"
 
+	"sigs.k8s.io/yaml"
+
 	"github.com/opensourceways/kafka-lib/agent"
-	"gopkg.in/yaml.v2"
 )
 
 var reIpPort = regexp.MustCompile(`^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}:[1-9][0-9]*$`)
