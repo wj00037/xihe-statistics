@@ -231,8 +231,8 @@ github.com/jackc/pgpassfile v1.0.0 h1:/6Hmqy13Ss2zCq62VdNG8tM1wchn8zjSGOBJ6icpsI
 github.com/jackc/pgpassfile v1.0.0/go.mod h1:CEx0iS5ambNFdcRtxPj5JhEz+xB6uRky5eyVu/W2HEg=
 github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a h1:bbPeKD0xmW/Y25WS6cokEszi5g+S0QxI/d45PkRi7Nk=
 github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a/go.mod h1:5TJZWKEWniPve33vlWYSoGYefn3gLQRzjfDlhSJ9ZKM=
-github.com/jackc/pgx/v5 v5.3.1 h1:Fcr8QJ1ZeLi5zsPZqQeUZhNhxfkkKBOgJuYkJHoBOtU=
-github.com/jackc/pgx/v5 v5.3.1/go.mod h1:t3JDKnCBlYIc0ewLF0Q7B8MXmoIaBOZj/ic7iHozM/8=
+github.com/jackc/pgx/v5 v5.4.3 h1:cxFyXhxlvAifxnkKKdlxv8XqUf59tDlYjnV5YYfsJJY=
+github.com/jackc/pgx/v5 v5.4.3/go.mod h1:Ig06C2Vu0t5qXC60W8sqIthScaEnFvojjj9dSljmHRA=
 github.com/jcmturner/aescts/v2 v2.0.0 h1:9YKLH6ey7H4eDBXW8khjYslgyqG2xZikXP0EQFKrle8=
 github.com/jcmturner/aescts/v2 v2.0.0/go.mod h1:AiaICIRyfYg35RUkr8yESTqvSy7csK90qZ5xfvvsoNs=
 github.com/jcmturner/dnsutils/v2 v2.0.0 h1:lltnkeZGL0wILNvrNiVCR6Ro5PGU/SeBvVO/8c/iPbo=
@@ -322,10 +322,10 @@ github.com/onsi/gomega v1.20.1/go.mod h1:DtrZpjmvpn2mPm4YWQa0/ALMDj9v4YxLgojwPeR
 github.com/opensourceways/community-robot-lib v0.0.0-20231018034126-a664e14dbb9d h1:g/i5rlWzEDeSxbcf8zlzYB5m/tManw5ZLfwnM8obi+c=
 github.com/opensourceways/community-robot-lib v0.0.0-20231018034126-a664e14dbb9d/go.mod h1:LlcEXB8B167NgeE8klLcztmg8oeGHJNEeZGv7xmxxFU=
 github.com/opensourceways/go-gitee v0.0.0-20231017075452-8c3dcc460ed2/go.mod h1:davbfHJ2gG4YY3cnsiWzG6VUptVWIFi+ltNldgmgySQ=
-github.com/opensourceways/kafka-lib v0.0.0-20230905120934-4961d2b76841 h1:+t7oDeW8mnRvdSumxeySYYQpjK3HDFsieKIu25D/fpE=
-github.com/opensourceways/kafka-lib v0.0.0-20230905120934-4961d2b76841/go.mod h1:QdqMHorecJ6UC6dL9T1luvKMQm7jNMLOMCD1f/yNSqs=
-github.com/opensourceways/server-common-lib v0.0.0-20230208064916-61fc43dfb8db h1:syzeracFtgfmSWpKvhhvx46RcjsZSjdubbVWO83eDA8=
-github.com/opensourceways/server-common-lib v0.0.0-20230208064916-61fc43dfb8db/go.mod h1:dQQwRnyuxQIF+E2471Qx6OpMiuTMRO9NGhV4Azduwc8=
+github.com/opensourceways/kafka-lib v0.0.0-20231016135231-bf184b2d51e7 h1:+B34QD7Ccn0tjCNu0sTyxSHzvI9Bu5OvaGhoXf+bY0s=
+github.com/opensourceways/kafka-lib v0.0.0-20231016135231-bf184b2d51e7/go.mod h1:pXHPRqyhgP+gn7bPW+jOrdOiVfmydYyHaOpnRVVXIlU=
+github.com/opensourceways/server-common-lib v0.0.0-20231016134644-4bd7efe825a9 h1:e48y2V5hHju5qU6+tU0QxAqUN6AfYmFHGhy6mvOT7jg=
+github.com/opensourceways/server-common-lib v0.0.0-20231016134644-4bd7efe825a9/go.mod h1:1iVJ+C3L9e0GJMUhGfbegH4CecnALntzfTW29GzBGUk=
 github.com/pelletier/go-toml/v2 v2.0.8 h1:0ctb6s9mE31h0/lhu+J6OPmVeDxJn+kYnJc2jZR9tGQ=
 github.com/pelletier/go-toml/v2 v2.0.8/go.mod h1:vuYfssBdrU2XDZ9bYydBu6t+6a6PYNcZljzZR9VXg+4=
 github.com/pierrec/lz4/v4 v4.1.14/go.mod h1:gZWDp/Ze/IJXGXf23ltt2EXimqmTUXEy0GFuRQyBid4=
