@@ -48,6 +48,7 @@ type PGSQL struct {
 	User     string `json:"user"`
 	DBName   string `json:"db_name"`
 	Password string `json:"password"`
+	DBCert   string `json:"db_cert"`
 }
 
 type MQ struct {
