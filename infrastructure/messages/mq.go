@@ -19,7 +19,7 @@ import (
 func Init(cfg kfklib.Config, log *logrus.Entry, topic config.Topics) error {
 	topics = topic
 
-	return kfklib.Init(&cfg, log, nil, "")
+	return kfklib.Init(&cfg, log, nil, "", true)
 }
 
 func Exit(log *logrus.Entry) {
