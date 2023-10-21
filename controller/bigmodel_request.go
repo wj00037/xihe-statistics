@@ -5,28 +5,6 @@ import (
 	"project/xihe-statistics/domain"
 )
 
-type BigModelCreateRequest struct {
-	UserName string `json:"username"`
-	BigModel string `json:"bigmodel"`
-}
-
-func (req *BigModelCreateRequest) toCmd() (cmd app.UserWithBigModelAddCmd, err error) {
-
-	if cmd.BigModel, err = domain.NewBigModel(req.BigModel); err != nil {
-		return
-	}
-
-	if cmd.UserName, err = domain.NewAccount(req.UserName); err != nil {
-		return
-	}
-
-	if cmd.CreatAt == 0 {
-		cmd.CreatAt = app.GetUnixLocalTime()
-	}
-
-	return
-}
-
 type BigModelQueryWithTypeAndTimeRequest struct {
 	BigModel  string `json:"bigmodel"`
 	StartTime string `json:"start_time"`
