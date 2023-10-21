@@ -18,5 +18,6 @@ USER mindspore
 WORKDIR /opt/app/
 
 COPY  --chown=mindspore --from=BUILDER /go/src/project/xihe-statistics/xihe-statistics /opt/app
+RUN chmod 550 /opt/app/xihe-statistics
 
 ENTRYPOINT ["/opt/app/xihe-statistics"]
