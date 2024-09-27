@@ -80,6 +80,10 @@ func main() {
 		logrus.Fatalf("initialize pgsql failed, err:%s", err.Error())
 	}
 
+	if err := os.Remove(cfg.PGSQL.DBCert); err != nil {
+		logrus.Fatalf("postgresql dbcert file delete failed, err:%s", err.Error())
+	}
+
 	// init kafka
 	if err := messages.Init(cfg.GetKfkConfig(), log, cfg.MQTopics); err != nil {
 		log.Fatalf("initialize mq failed, err:%v", err)

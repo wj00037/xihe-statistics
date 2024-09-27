@@ -48,11 +48,16 @@ type PGSQL struct {
 	User     string `json:"user"`
 	DBName   string `json:"db_name"`
 	Password string `json:"password"`
+	DBCert   string `json:"db_cert"`
 }
 
 type MQ struct {
-	Address string `json:"address" required:"true"`
-	Version string `json:"version"`
+	Address   string `json:"address"   required:"true"`
+	Version   string `json:"version"`
+	MQCert    string `json:"mq_cert"   required:"true"`
+	Username  string `json:"user_name" required:"true"`
+	Password  string `json:"password"  required:"true"`
+	Algorithm string `json:"algorithm" required:"true"`
 }
 
 type GitLab struct {
@@ -72,8 +77,12 @@ type Topics struct {
 
 func (cfg *Config) GetKfkConfig() agent.Config {
 	return agent.Config{
-		Address: cfg.MQ.Address,
-		Version: cfg.MQ.Version,
+		Address:   cfg.MQ.Address,
+		Version:   cfg.MQ.Version,
+		MQCert:    cfg.MQ.MQCert,
+		Username:  cfg.MQ.Username,
+		Password:  cfg.MQ.Password,
+		Algorithm: cfg.MQ.Algorithm,
 	}
 }
 

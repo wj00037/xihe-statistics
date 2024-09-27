@@ -13,7 +13,7 @@ import (
 var cli *client
 
 func Initialize(cfg *config.PGSQL) (err error) {
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Shanghai", cfg.Host, cfg.User, cfg.Password, cfg.DBName, cfg.Port)
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=verify-ca TimeZone=Asia/Shanghai sslrootcert=%s", cfg.Host, cfg.User, cfg.Password, cfg.DBName, cfg.Port, cfg.DBCert)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return

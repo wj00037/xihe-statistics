@@ -142,9 +142,10 @@ func statisticsDo(handler interface{}, b []byte) (err error) {
 
 		return h.AddCloudRecord(&c)
 
+	default:
+		return errors.New("unknown message statistics type")
 	}
 
-	return
 }
 
 func gitLabDo(
